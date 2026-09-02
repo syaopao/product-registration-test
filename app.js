@@ -1201,16 +1201,27 @@ let barcodeScanner = null;
       });
     }
 
-    function callSubmitRegistration(payload) {
-      // GAS上では従来どおり submitRegistration() を呼び出す。
-      if (window.google && google.script && google.script.run) {
-        return new Promise((resolve, reject) => {
-          google.script.run
-            .withSuccessHandler(resolve)
-            .withFailureHandler(reject)
-            .submitRegistration(payload);
-        });
-      }
+   
+
+async function callSubmitRegistration(payload) {
+  const response = await fetch(GAS_WEB_APP_URL, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'text/plain;charset=utf-8'
+    },
+    body: JSON.stringify(payload)
+  });
+
+  const result = await response.json();
+
+  if (!result.ok) {
+    throw new Error(result.message || 'GAS送信に失敗しました。');
+  }
+
+  return result;
+}
+
+
 
       // ローカルUI確認用。実データは送信せず、送信成功を模擬する。
       console.log('[LOCAL MOCK] submitRegistration', payload);
