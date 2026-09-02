@@ -1259,12 +1259,20 @@ let barcodeScanner = null;
    
 
 async function callSubmitRegistration(payload) {
+  if (!googleIdToken) {
+    throw new Error('Googleログインが必要です。');
+  }
+
   const response = await fetch(GAS_WEB_APP_URL, {
     method: 'POST',
     headers: {
       'Content-Type': 'text/plain;charset=utf-8'
     },
-    body: JSON.stringify(payload)
+    body: JSON.stringify({
+      action: 'submitRegistration',
+      idToken: googleIdToken,
+      payload: payload
+    })
   });
 
   const result = await response.json();
@@ -1275,7 +1283,6 @@ async function callSubmitRegistration(payload) {
 
   return result;
 }
-
 
 
 
