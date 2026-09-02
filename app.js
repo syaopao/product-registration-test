@@ -4,7 +4,7 @@ const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwz2Fi7rCIG8I1a
 // Google ログイン + 30日ログイン保持
 // ==============================
 
-const GOOGLE_CLIENT_ID = '656446276650-coa5rruu2bd1peg75modl245o4bba8up.apps.googleusercontent.com';';
+const GOOGLE_CLIENT_ID = '656446276650-coa5rruu2bd1peg75modl245o4bba8up.apps.googleusercontent.com';
 const SESSION_STORAGE_KEY = 'product-registration-session-token';
 
 let googleIdToken = '';
