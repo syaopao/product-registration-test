@@ -82,3 +82,48 @@ main{padding-top:10px;padding-bottom:calc(var(--footer-height) + env(safe-area-i
 .drawer-section[open]>.setting-body,.drawer-section[open]>.drawer-keep-options{animation:drawerSectionOpen .14s ease-out}
 @keyframes drawerSectionOpen{from{opacity:.55;transform:translateY(-3px)}to{opacity:1;transform:translateY(0)}}
 /* ===== /v0.7 ===== */
+
+
+/* ===== ログイン画面 ===== */
+
+.login-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #e5e7eb;
+  padding: 24px;
+}
+
+.login-card {
+  width: min(100%, 360px);
+  padding: 32px 24px;
+  background: #ffffff;
+  border-radius: 16px;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+}
+
+.login-card h1 {
+  margin: 0 0 12px;
+  font-size: 22px;
+}
+
+.login-card p {
+  margin: 0 0 24px;
+  color: #666666;
+  font-size: 14px;
+}
+
+#googleLoginButton {
+  display: flex;
+  justify-content: center;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* ===== /ログイン画面 ===== */
