@@ -56,13 +56,22 @@ async function handleGoogleCredentialResponse(response) {
       throw new Error(result.message || 'ログイン確認に失敗しました。');
     }
 
-    console.log('ログイン成功:', result.user);
+   console.log('ログイン成功:', result.user);
 
-    alert(
-      'ログイン成功\n' +
-      '名前: ' + (result.user.name || '') + '\n' +
-      '権限: ' + (result.user.role || '')
-    );
+const loginScreen =
+  document.getElementById('loginScreen');
+
+const appContent =
+  document.getElementById('appContent');
+
+if (loginScreen) {
+  loginScreen.classList.add('hidden');
+}
+
+if (appContent) {
+  appContent.classList.remove('hidden');
+}
+    
 
   } catch (error) {
     console.error(error);
