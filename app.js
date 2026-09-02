@@ -1223,13 +1223,6 @@ async function callSubmitRegistration(payload) {
 
 
 
-      // ローカルUI確認用。実データは送信せず、送信成功を模擬する。
-      console.log('[LOCAL MOCK] submitRegistration', payload);
-      return Promise.resolve({
-        success: true,
-        message: 'ローカルテスト送信が完了しました（実際のスプレッドシートには送信していません）。'
-      });
-    }
 
 // 起動処理・イベント配線
     function init() {
