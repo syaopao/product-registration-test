@@ -30,11 +30,46 @@ window.addEventListener('load', () => {
   }
 });
 
-function handleGoogleCredentialResponse(response) {
+async function handleGoogleCredentialResponse(response) {
   if (!response || !response.credential) {
     alert('Googleログインに失敗しました。');
     return;
   }
+
+  googleIdToken = response.credential;
+
+  try {
+    const gasResponse = await fetch(GAS_WEB_APP_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'text/plain;charset=utf-8'
+      },
+      body: JSON.stringify({
+        action: 'login',
+        idToken: googleIdToken
+      })
+    });
+
+    const result = await gasResponse.json();
+
+    if (!result.ok) {
+      throw new Error(result.message || 'ログイン確認に失敗しました。');
+    }
+
+    console.log('ログイン成功:', result.user);
+
+    alert(
+      'ログイン成功\n' +
+      '名前: ' + (result.user.name || '') + '\n' +
+      '権限: ' + (result.user.role || '')
+    );
+
+  } catch (error) {
+    console.error(error);
+    googleIdToken = '';
+    alert('ログイン失敗: ' + error.message);
+  }
+}
 
   googleIdToken = response.credential;
 
