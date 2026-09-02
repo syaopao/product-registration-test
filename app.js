@@ -1,42 +1,5 @@
 const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwz2Fi7rCIG8I1ayVh2C0LxxtHVqOARPEWXSUXWccrbhGF6ttWP7gElOl5ofejGZT71/exec';
 
-async function testGasConnection() {
-  try {
-    const response = await fetch(GAS_WEB_APP_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'text/plain;charset=utf-8'
-      },
-      body: JSON.stringify({
-        sheetName: 'テスト',
-        staffName: '接続テスト',
-        controlNumber: 'TEST001',
-        category: 'その他',
-        classification: '通常',
-        productTitle: 'GitHub POSTテスト',
-        barcodeNumber: '',
-        itemCondition: 'C 目立った傷や汚れなし',
-        operationCheck: '稼働品',
-        damageDetails: '',
-        accessories: [],
-        notes: 'POST接続確認'
-      })
-    });
-
-    const data = await response.json();
-
-    alert(
-      'POST結果\n' +
-      JSON.stringify(data, null, 2)
-    );
-
-  } catch (error) {
-    alert(
-      'POST失敗\n' +
-      (error.message || String(error))
-    );
-  }
-}
 
 // 共通状態・定数・DOM参照
 let barcodeScanner = null;
