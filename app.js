@@ -71,10 +71,6 @@ async function handleGoogleCredentialResponse(response) {
   }
 }
 
-  googleIdToken = response.credential;
-
-  console.log('Google認証情報を取得しました。');
-  alert('Google認証情報を取得できました。');
 
 
 // 共通状態・定数・DOM参照
