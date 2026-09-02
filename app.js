@@ -2,18 +2,38 @@ const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwz2Fi7rCIG8I1a
 
 async function testGasConnection() {
   try {
-    const response = await fetch(GAS_WEB_APP_URL);
+    const response = await fetch(GAS_WEB_APP_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'text/plain;charset=utf-8'
+      },
+      body: JSON.stringify({
+        sheetName: 'テスト',
+        staffName: '接続テスト',
+        controlNumber: 'TEST001',
+        category: 'その他',
+        classification: '通常',
+        productTitle: 'GitHub POSTテスト',
+        barcodeNumber: '',
+        itemCondition: 'C 目立った傷や汚れなし',
+        operationCheck: '稼働品',
+        damageDetails: '',
+        accessories: [],
+        notes: 'POST接続確認'
+      })
+    });
+
     const data = await response.json();
 
     alert(
-      data && data.ok
-        ? `GAS接続成功\n${data.message || ''}`
-        : 'GASから想定外の返答がありました'
+      'POST結果\n' +
+      JSON.stringify(data, null, 2)
     );
+
   } catch (error) {
     alert(
-      'GAS接続失敗\n' +
-      (error && error.message ? error.message : String(error))
+      'POST失敗\n' +
+      (error.message || String(error))
     );
   }
 }
