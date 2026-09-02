@@ -127,3 +127,8 @@ main{padding-top:10px;padding-bottom:calc(var(--footer-height) + env(safe-area-i
 }
 
 /* ===== /ログイン画面 ===== */
+
+/* Google接続設定を一時的に非表示 */
+#settingsDrawer details:nth-of-type(7) {
+  display: none;
+}
