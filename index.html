@@ -8,10 +8,18 @@
 <link rel="stylesheet" href="style.css">
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
-<body>
-  <div id="loginScreen">
-  <div id="googleLoginButton"></div>
+  
+<div id="loginScreen" class="login-screen">
+  <div class="login-card">
+    <h1>商品登録ツール</h1>
+    <p>Googleアカウントでログインしてください。</p>
+    <div id="googleLoginButton"></div>
+  </div>
 </div>
+
+<div id="appContent" class="hidden">
+
+  
   <header class="app-header">
     <button class="header-menu-button secondary" type="button" id="menuButton" aria-label="メニューを開く" aria-expanded="false">☰</button>
     <h1 class="app-header-title" id="appHeaderTitle">商品登録</h1>
@@ -245,5 +253,6 @@
   <script src="camera.js"></script>
   <script src="barcode.js"></script>
   <script src="app.js?v=3"></script>
+  </div>
 </body>
 </html>
