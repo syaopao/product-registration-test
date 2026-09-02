@@ -1,3 +1,23 @@
+const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwz2Fi7rCIG8I1ayVh2C0LxxtHVqOARPEWXSUXWccrbhGF6ttWP7gElOl5ofejGZT71/exec';
+
+async function testGasConnection() {
+  try {
+    const response = await fetch(GAS_WEB_APP_URL);
+    const data = await response.json();
+
+    alert(
+      data && data.ok
+        ? `GAS接続成功\n${data.message || ''}`
+        : 'GASから想定外の返答がありました'
+    );
+  } catch (error) {
+    alert(
+      'GAS接続失敗\n' +
+      (error && error.message ? error.message : String(error))
+    );
+  }
+}
+
 // 共通状態・定数・DOM参照
 let barcodeScanner = null;
     let dragSrc = null;
