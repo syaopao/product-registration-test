@@ -1,5 +1,46 @@
 const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwz2Fi7rCIG8I1ayVh2C0LxxtHVqOARPEWXSUXWccrbhGF6ttWP7gElOl5ofejGZT71/exec';
+// ==============================
+// Google ログイン
+// ==============================
 
+const GOOGLE_CLIENT_ID = '656446276650-coa5rruu2bd1peg75modl245o4bba8up.apps.googleusercontent.com';
+
+let googleIdToken = '';
+
+window.addEventListener('load', () => {
+  if (!window.google || !google.accounts || !google.accounts.id) {
+    console.error('Google Identity Services の読み込みに失敗しました。');
+    return;
+  }
+
+  google.accounts.id.initialize({
+    client_id: GOOGLE_CLIENT_ID,
+    callback: handleGoogleCredentialResponse,
+  });
+
+  const buttonElement = document.getElementById('googleLoginButton');
+
+  if (buttonElement) {
+    google.accounts.id.renderButton(buttonElement, {
+      theme: 'outline',
+      size: 'large',
+      text: 'signin_with',
+      shape: 'rectangular',
+    });
+  }
+});
+
+function handleGoogleCredentialResponse(response) {
+  if (!response || !response.credential) {
+    alert('Googleログインに失敗しました。');
+    return;
+  }
+
+  googleIdToken = response.credential;
+
+  console.log('Google認証情報を取得しました。');
+  alert('Google認証情報を取得できました。');
+}
 
 // 共通状態・定数・DOM参照
 let barcodeScanner = null;
