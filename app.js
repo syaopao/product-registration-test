@@ -1,15 +1,29 @@
 const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwz2Fi7rCIG8I1ayVh2C0LxxtHVqOARPEWXSUXWccrbhGF6ttWP7gElOl5ofejGZT71/exec';
+
 // ==============================
-// Google ログイン
+// Google ログイン + 30日ログイン保持
 // ==============================
 
-const GOOGLE_CLIENT_ID = '656446276650-coa5rruu2bd1peg75modl245o4bba8up.apps.googleusercontent.com';
+const GOOGLE_CLIENT_ID = '656446276650-coa5rruu2bd1peg75modl245o4bba8up.apps.googleusercontent.com';';
+const SESSION_STORAGE_KEY = 'product-registration-session-token';
 
 let googleIdToken = '';
+let sessionToken = '';
 
-window.addEventListener('load', () => {
+window.addEventListener('load', async () => {
+  const savedSessionToken = localStorage.getItem(SESSION_STORAGE_KEY) || '';
+
+  if (savedSessionToken) {
+    const restored = await tryRestoreSession(savedSessionToken);
+    if (restored) return;
+  }
+
+  initGoogleLoginButton();
+});
+
+function initGoogleLoginButton() {
   if (!window.google || !google.accounts || !google.accounts.id) {
-    console.error('Google Identity Services の読み込みに失敗しました。');
+    setTimeout(initGoogleLoginButton, 500);
     return;
   }
 
@@ -21,6 +35,8 @@ window.addEventListener('load', () => {
   const buttonElement = document.getElementById('googleLoginButton');
 
   if (buttonElement) {
+    buttonElement.innerHTML = '';
+
     google.accounts.id.renderButton(buttonElement, {
       theme: 'outline',
       size: 'large',
@@ -28,7 +44,7 @@ window.addEventListener('load', () => {
       shape: 'rectangular',
     });
   }
-});
+}
 
 async function handleGoogleCredentialResponse(response) {
   if (!response || !response.credential) {
@@ -56,30 +72,69 @@ async function handleGoogleCredentialResponse(response) {
       throw new Error(result.message || 'ログイン確認に失敗しました。');
     }
 
-   console.log('ログイン成功:', result.user);
+    if (!result.sessionToken) {
+      throw new Error('セッショントークンを取得できませんでした。');
+    }
 
-const loginScreen =
-  document.getElementById('loginScreen');
+    sessionToken = result.sessionToken;
+    localStorage.setItem(SESSION_STORAGE_KEY, sessionToken);
 
-const appContent =
-  document.getElementById('appContent');
-
-if (loginScreen) {
-  loginScreen.classList.add('hidden');
-}
-
-if (appContent) {
-  appContent.classList.remove('hidden');
-}
-    
+    showAppAfterLogin(result.user);
 
   } catch (error) {
     console.error(error);
     googleIdToken = '';
+    sessionToken = '';
+    localStorage.removeItem(SESSION_STORAGE_KEY);
     alert('ログイン失敗: ' + error.message);
   }
 }
 
+async function tryRestoreSession(savedToken) {
+  try {
+    const response = await fetch(GAS_WEB_APP_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'text/plain;charset=utf-8'
+      },
+      body: JSON.stringify({
+        action: 'checkSession',
+        sessionToken: savedToken
+      })
+    });
+
+    const result = await response.json();
+
+    if (!result.ok) {
+      throw new Error(result.message || 'セッションが無効です。');
+    }
+
+    sessionToken = savedToken;
+    showAppAfterLogin(result.user);
+    return true;
+
+  } catch (error) {
+    console.log('保存済みログインは利用できません:', error.message);
+    sessionToken = '';
+    localStorage.removeItem(SESSION_STORAGE_KEY);
+    return false;
+  }
+}
+
+function showAppAfterLogin(user) {
+  console.log('ログイン済み:', user);
+
+  const loginScreen = document.getElementById('loginScreen');
+  const appContent = document.getElementById('appContent');
+
+  if (loginScreen) {
+    loginScreen.classList.add('hidden');
+  }
+
+  if (appContent) {
+    appContent.classList.remove('hidden');
+  }
+}
 
 
 // 共通状態・定数・DOM参照
@@ -1268,8 +1323,8 @@ let barcodeScanner = null;
    
 
 async function callSubmitRegistration(payload) {
-  if (!googleIdToken) {
-    throw new Error('Googleログインが必要です。');
+  if (!sessionToken) {
+    throw new Error('ログインが必要です。');
   }
 
   const response = await fetch(GAS_WEB_APP_URL, {
@@ -1279,7 +1334,7 @@ async function callSubmitRegistration(payload) {
     },
     body: JSON.stringify({
       action: 'submitRegistration',
-      idToken: googleIdToken,
+      sessionToken: sessionToken,
       payload: payload
     })
   });
@@ -1287,11 +1342,22 @@ async function callSubmitRegistration(payload) {
   const result = await response.json();
 
   if (!result.ok) {
+    const message = String(result.message || '');
+
+    if (
+      message.includes('セッション') ||
+      message.includes('ログインの有効期限')
+    ) {
+      localStorage.removeItem(SESSION_STORAGE_KEY);
+      sessionToken = '';
+    }
+
     throw new Error(result.message || 'GAS送信に失敗しました。');
   }
 
   return result;
 }
+
 
 
 
