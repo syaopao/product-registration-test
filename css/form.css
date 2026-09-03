@@ -1,0 +1,48 @@
+/* フォーム・入力・バーコード・画像一覧 */
+
+label,.field{display:grid;gap:7px;font-weight:700;font-size:17px;width:100%}
+input:not([type=checkbox]):not([type=file]),select,textarea{width:100%;min-height:56px;border:1px solid var(--line);border-radius:8px;padding:13px 12px;color:var(--text);background:#fff;font:inherit;font-size:18px;appearance:none;-webkit-appearance:none}
+select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%235e6b78' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:36px}
+textarea{min-height:104px;resize:vertical}
+input:focus,select:focus,textarea:focus,button:focus{outline:3px solid var(--focus);outline-offset:2px}
+input[type=checkbox]{position:static!important;width:20px!important;height:20px!important;min-height:20px!important;overflow:visible!important;clip:auto!important;flex-shrink:0;appearance:auto;-webkit-appearance:checkbox}
+input[type=file],.visually-hidden{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}
+button,.file-button{min-height:54px;border:0;border-radius:8px;padding:12px;background:var(--accent);color:#fff;font:inherit;font-size:17px;font-weight:800;cursor:pointer;text-align:center;touch-action:manipulation;width:100%;display:flex;align-items:center;justify-content:center;gap:6px;line-height:1.25}
+.file-button{display:inline-flex}
+.drop-zone{min-height:132px;display:grid;place-items:center;gap:10px;padding:12px;border:2px dashed #b9c5d1;border-radius:8px;background:#fbfcfd;text-align:center;color:var(--muted)}
+.drop-zone.dragging{border-color:var(--accent);background:#edf6ff}
+#barcodeReader{width:100%;max-height:240px;overflow:hidden;border-radius:10px;background:#111827}
+#barcodeReader video{max-height:240px;object-fit:cover;width:100%}
+.preview{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.preview-note{margin:6px 2px 0;color:var(--muted);font-size:12px;font-weight:700;line-height:1.35}
+.thumb{position:relative;overflow:hidden;border:1px solid var(--line);border-radius:8px;background:#fff;aspect-ratio:1/1;transition:opacity .2s;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.thumb-image{position:absolute;inset:0;background-position:center;background-size:cover;background-repeat:no-repeat;pointer-events:none;transition:transform .12s ease}
+.thumb.dragging{opacity:.4;border:2px dashed var(--accent)}
+.thumb.drag-over{border:2px solid var(--accent);transform:scale(1.04)}
+.remove{position:absolute;top:3px;right:3px;min-height:26px;width:26px;padding:0;border-radius:999px;background:rgba(180,35,24,.9);font-size:16px;line-height:1}
+.select-wrap{position:relative;width:100%}
+.multi-button{width:100%;display:flex;align-items:center;justify-content:space-between;gap:8px;border:1px solid var(--line);background:#fff;color:var(--text);font-weight:700;min-height:56px;font-size:18px;border-radius:8px;padding:12px}
+.multi-menu{position:absolute;top:calc(100% + 6px);left:0;right:0;display:grid;gap:4px;padding:8px;border:1px solid var(--line);border-radius:10px;background:#fff;box-shadow:0 8px 24px rgba(23,33,43,.16);z-index:50;max-height:min(360px,calc(100vh - 140px));overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+.multi-menu.open-up{top:auto;bottom:calc(100% + 6px)}
+.multi-option{display:flex;align-items:center;gap:8px;min-height:52px;padding:8px;border-radius:8px;font-weight:700;font-size:18px}
+.barcode-label-row{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+.barcode-count{font-size:12px;font-weight:800;line-height:1;color:var(--danger);white-space:nowrap}
+.barcode-count.valid{color:var(--accent)}
+.keep-panel{background:#e9eef3;border:1px solid var(--line);border-radius:8px;padding:0;margin:0 0 10px;overflow:hidden}
+.keep-title{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:38px;padding:8px;color:#30475c;font-size:12px;font-weight:800;cursor:pointer;list-style:none}
+.keep-title::-webkit-details-marker{display:none}
+.keep-title::after{content:"開く";font-size:11px;color:var(--muted)}
+.keep-panel[open] .keep-title::after{content:"閉じる"}
+.keep-options{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px 8px;padding:0 8px 8px}
+.keep-option{display:flex;align-items:center;justify-content:flex-start;gap:4px;font-size:11px;font-weight:800;text-align:left;min-height:28px;white-space:nowrap}
+.keep-option input{margin:0;width:18px!important;height:18px!important;min-height:18px!important}
+.barcode-actions{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.barcode-actions button,.barcode-actions .file-button{min-height:58px;padding:8px 6px;font-size:14px;white-space:normal}
+.image-actions{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.image-actions button,.image-actions .file-button{min-height:58px;padding:9px 8px;font-size:15px}
+.autocomplete-wrap{position:relative;width:100%}
+.autocomplete-menu{position:absolute;top:calc(100% + 6px);left:0;right:0;z-index:60;max-height:min(360px,48vh);overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;padding:6px;border:1px solid var(--line);border-radius:10px;background:#fff;box-shadow:0 8px 24px rgba(23,33,43,.16)}
+.autocomplete-option{width:100%;min-height:48px;padding:10px 12px;border:0;border-bottom:1px solid var(--soft);border-radius:6px;background:#fff;color:var(--text);display:flex;align-items:center;justify-content:flex-start;text-align:left;font-size:17px;font-weight:700}
+.autocomplete-option:last-child{border-bottom:0}
+.autocomplete-option:active,.autocomplete-option.active{background:var(--soft)}
+.autocomplete-empty{padding:12px;color:var(--muted);font-size:14px;font-weight:700}

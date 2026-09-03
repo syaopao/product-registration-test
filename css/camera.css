@@ -1,0 +1,21 @@
+/* カメラ・ライトボックス・確認ダイアログ */
+
+#lightbox{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:200;display:flex;align-items:center;justify-content:center;padding:54px 12px 82px}
+#lightbox.hidden{display:none!important}
+#lightboxImg{max-width:95vw;max-height:calc(100vh - 150px);border-radius:8px;object-fit:contain;transition:transform .12s ease}
+.lightbox-actions{position:fixed;left:12px;right:12px;bottom:max(12px,env(safe-area-inset-bottom));display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.lightbox-actions button{min-height:48px;border-radius:8px;background:rgba(255,255,255,.18);color:#fff}
+#lightboxClose{background:rgba(255,255,255,.28)}
+#cameraDialog{position:fixed;inset:0;z-index:210;display:grid;grid-template-rows:1fr auto;place-items:center;background:#05070a;padding:max(10px,env(safe-area-inset-top)) 10px max(10px,env(safe-area-inset-bottom))}
+#cameraDialog.hidden{display:none!important}
+.camera-monitor{position:relative;width:min(100%,calc(100vh - 130px));aspect-ratio:1/1}
+.camera-count{position:absolute;left:10px;top:10px;min-height:28px;padding:5px 10px;border-radius:999px;background:rgba(5,7,10,.72);color:#fff;font-size:13px;font-weight:850}
+.camera-actions{width:100%;max-width:560px;display:grid;grid-template-columns:1fr 2fr 1fr;gap:8px;padding-top:12px;align-items:center}
+#cameraDialog button:focus{outline:none}
+#confirmDialog{position:fixed;inset:0;z-index:220;display:grid;place-items:center;padding:18px;background:rgba(23,33,43,.48)}
+#confirmDialog.hidden{display:none!important}
+.confirm-box{width:100%;max-width:440px;display:grid;gap:16px;padding:18px;border-radius:8px;background:#fff;box-shadow:0 18px 48px rgba(23,33,43,.3)}
+.confirm-title{margin:0;font-size:20px;font-weight:850}
+.confirm-text{margin:0;color:#3a4653;font-size:16px;font-weight:700;white-space:pre-line}
+.confirm-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.confirm-actions button{min-height:50px}
