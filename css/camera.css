@@ -137,19 +137,25 @@
   white-space: nowrap;
 }
 
-.camera-zoom-slider {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 100%;
-  height: 5px;
-  min-height: 5px;
-  margin: 0;
-  padding: 0;
-  border: none;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.28);
-  box-shadow: none;
-  outline: none;
+#cameraDialog input.camera-zoom-slider {
+  -webkit-appearance: none !important;
+  appearance: none !important;
+
+  width: 100% !important;
+  height: 5px !important;
+  min-height: 5px !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  border: none !important;
+  border-radius: 999px !important;
+
+  background: rgba(255, 255, 255, 0.28) !important;
+
+  box-shadow: none !important;
+  outline: none !important;
+
   cursor: pointer;
 }
 
