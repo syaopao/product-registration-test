@@ -66,6 +66,10 @@
             frameRate: { ideal: 15, max: 24 },
           },
         });
+
+        setupProductCameraZoom();
+
+          
         productCameraVideo.srcObject = productCameraStream;
         updateProductCameraCount();
         cameraDialog.classList.remove('hidden');
@@ -137,14 +141,29 @@
     }
 
     async function stopProductCamera(showMessageOnStop = true) {
-      if (productCameraStream) {
-        productCameraStream.getTracks().forEach(track => track.stop());
-        productCameraStream = null;
-      }
-      productCameraVideo.srcObject = null;
-      cameraDialog.classList.add('hidden');
-      if (showMessageOnStop) showMessage('カメラを閉じました。', '');
-    }
+  if (productCameraStream) {
+    productCameraStream.getTracks().forEach(track => track.stop());
+    productCameraStream = null;
+  }
+
+  productCameraVideo.srcObject = null;
+  cameraDialog.classList.add('hidden');
+
+  productCameraZoomTrack = null;
+  productCameraZoomCapabilities = null;
+  productCameraZoomValue = 1;
+
+  const zoomControls = document.getElementById('cameraZoomControls');
+  if (zoomControls) {
+    zoomControls.classList.add('hidden');
+  }
+
+  if (showMessageOnStop) {
+    showMessage('カメラを閉じました。', '');
+  }
+}
+
+
 
     function updateProductCameraCount(nextCount) {
       const count = Number.isFinite(Number(nextCount)) ? Number(nextCount) : imageState.productImages.length;
@@ -525,5 +544,220 @@
         applyImageRotationStyle(lightboxImg, image);
       }
     }
+
+// ==============================
+// カメラズーム
+// ==============================
+
+let productCameraZoomTrack = null;
+let productCameraZoomCapabilities = null;
+let productCameraZoomValue = 1;
+
+async function setupProductCameraZoom() {
+  const controls = document.getElementById('cameraZoomControls');
+  const slider = document.getElementById('cameraZoomSlider');
+  const valueLabel = document.getElementById('cameraZoomValue');
+  const maxLabel = document.getElementById('cameraZoomMax');
+  const zoomOutButton = document.getElementById('cameraZoomOutButton');
+  const zoomInButton = document.getElementById('cameraZoomInButton');
+  const monitor = document.querySelector('.camera-monitor');
+
+  if (
+    !controls ||
+    !slider ||
+    !valueLabel ||
+    !maxLabel ||
+    !productCameraStream
+  ) {
+    return;
+  }
+
+  const tracks = productCameraStream.getVideoTracks();
+
+  if (!tracks.length) {
+    controls.classList.add('hidden');
+    return;
+  }
+
+  productCameraZoomTrack = tracks[0];
+
+  if (
+    !productCameraZoomTrack.getCapabilities
+  ) {
+    controls.classList.add('hidden');
+    return;
+  }
+
+  const capabilities =
+    productCameraZoomTrack.getCapabilities();
+
+  if (!capabilities.zoom) {
+    controls.classList.add('hidden');
+    return;
+  }
+
+  productCameraZoomCapabilities =
+    capabilities.zoom;
+
+  const min =
+    Number(productCameraZoomCapabilities.min) || 1;
+
+  const max =
+    Number(productCameraZoomCapabilities.max) || min;
+
+  const step =
+    Number(productCameraZoomCapabilities.step) || 0.1;
+
+  const settings =
+    productCameraZoomTrack.getSettings
+      ? productCameraZoomTrack.getSettings()
+      : {};
+
+  productCameraZoomValue =
+    Number(settings.zoom) || min;
+
+  slider.min = String(min);
+  slider.max = String(max);
+  slider.step = String(step);
+  slider.value = String(productCameraZoomValue);
+
+  valueLabel.textContent =
+    `${productCameraZoomValue.toFixed(1)}x`;
+
+  maxLabel.textContent =
+    `${max.toFixed(1)}x`;
+
+  controls.classList.remove('hidden');
+
+  slider.oninput = async () => {
+    await setProductCameraZoom(
+      Number(slider.value)
+    );
+  };
+
+  zoomOutButton.onclick = async () => {
+    await changeProductCameraZoom(-1);
+  };
+
+  zoomInButton.onclick = async () => {
+    await changeProductCameraZoom(1);
+  };
+
+  if (
+    monitor &&
+    !monitor.dataset.zoomWheelReady
+  ) {
+    monitor.dataset.zoomWheelReady = '1';
+
+    monitor.addEventListener(
+      'wheel',
+      async event => {
+        if (
+          !productCameraZoomTrack ||
+          !productCameraZoomCapabilities
+        ) {
+          return;
+        }
+
+        event.preventDefault();
+
+        if (event.deltaY < 0) {
+          await changeProductCameraZoom(1);
+        } else {
+          await changeProductCameraZoom(-1);
+        }
+      },
+      {
+        passive: false,
+      }
+    );
+  }
+}
+
+async function changeProductCameraZoom(direction) {
+  if (!productCameraZoomCapabilities) {
+    return;
+  }
+
+  const min =
+    Number(productCameraZoomCapabilities.min) || 1;
+
+  const max =
+    Number(productCameraZoomCapabilities.max) || min;
+
+  const nativeStep =
+    Number(productCameraZoomCapabilities.step) || 0.1;
+
+  const step = Math.max(nativeStep, 0.1);
+
+  const nextValue =
+    productCameraZoomValue +
+    step * direction;
+
+  await setProductCameraZoom(
+    Math.min(
+      max,
+      Math.max(min, nextValue)
+    )
+  );
+}
+
+async function setProductCameraZoom(value) {
+  if (
+    !productCameraZoomTrack ||
+    !productCameraZoomCapabilities
+  ) {
+    return;
+  }
+
+  const min =
+    Number(productCameraZoomCapabilities.min) || 1;
+
+  const max =
+    Number(productCameraZoomCapabilities.max) || min;
+
+  const zoomValue =
+    Math.min(
+      max,
+      Math.max(min, Number(value))
+    );
+
+  try {
+    await productCameraZoomTrack.applyConstraints({
+      advanced: [
+        {
+          zoom: zoomValue,
+        },
+      ],
+    });
+
+    productCameraZoomValue = zoomValue;
+
+    const slider =
+      document.getElementById(
+        'cameraZoomSlider'
+      );
+
+    const valueLabel =
+      document.getElementById(
+        'cameraZoomValue'
+      );
+
+    if (slider) {
+      slider.value =
+        String(productCameraZoomValue);
+    }
+
+    if (valueLabel) {
+      valueLabel.textContent =
+        `${productCameraZoomValue.toFixed(1)}x`;
+    }
+  } catch (error) {
+    console.warn(
+      'カメラズーム変更に失敗しました:',
+      error
+    );
+  }
+}
 
     let confirmResolver = null;
