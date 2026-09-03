@@ -374,11 +374,4 @@
 }
 
 
-/* ===== 反映確認テスト ===== */
 
-#captureProductCameraButton {
-  background: red !important;
-  border-radius: 0 !important;
-  color: white !important;
-  font-size: 16px !important;
-}
