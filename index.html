@@ -216,19 +216,24 @@
     </div>
   </div>
   <div id="cameraDialog" class="hidden" aria-modal="true">
+
+
     
     <div class="camera-monitor">
       <video id="productCameraVideo" autoplay playsinline muted></video>
       <div id="productCameraCount" class="camera-count">撮影 0</div>
     </div>
 
-    <div class="camera-monitor">
-  <video id="productCameraVideo" autoplay playsinline muted></video>
-</div>
 
-<!-- ここにズームUI -->
+<!-- ズームUI -->
 <div id="cameraZoomControls" class="camera-zoom hidden">
-  <button type="button" id="cameraZoomOutButton" class="camera-zoom-button">−</button>
+  <button
+    type="button"
+    id="cameraZoomOutButton"
+    class="camera-zoom-button"
+  >
+    −
+  </button>
 
   <span id="cameraZoomValue" class="camera-zoom-value">1.0x</span>
 
@@ -244,19 +249,35 @@
 
   <span id="cameraZoomMax" class="camera-zoom-max">3.0x</span>
 
-  <button type="button" id="cameraZoomInButton" class="camera-zoom-button">＋</button>
+  <button
+    type="button"
+    id="cameraZoomInButton"
+    class="camera-zoom-button"
+  >
+    ＋
+  </button>
 </div>
 
-<div class="camera-actions">
+
+
 
     
+
     <canvas id="productCameraCanvas" class="hidden"></canvas>
 
-    <div class="camera-actions">
-      <div></div>
-      <button type="button" id="captureProductCameraButton">📷 撮影</button>
-      <button class="secondary" type="button" id="closeProductCameraButton">閉じる</button>
-    </div>
+<div class="camera-actions">
+  <button class="secondary" type="button" id="closeProductCameraButton">
+    閉じる
+  </button>
+
+  <button type="button" id="captureProductCameraButton">
+    📷 撮影
+  </button>
+
+  <div></div>
+</div>
+
+    
   </div>
   <div id="confirmDialog" class="hidden" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
     <div class="confirm-box">
