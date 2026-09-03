@@ -216,10 +216,40 @@
     </div>
   </div>
   <div id="cameraDialog" class="hidden" aria-modal="true">
+    
     <div class="camera-monitor">
       <video id="productCameraVideo" autoplay playsinline muted></video>
       <div id="productCameraCount" class="camera-count">撮影 0</div>
     </div>
+
+    <div class="camera-monitor">
+  <video id="productCameraVideo" autoplay playsinline muted></video>
+</div>
+
+<!-- ここにズームUI -->
+<div id="cameraZoomControls" class="camera-zoom hidden">
+  <button type="button" id="cameraZoomOutButton" class="camera-zoom-button">−</button>
+
+  <span id="cameraZoomValue" class="camera-zoom-value">1.0x</span>
+
+  <input
+    type="range"
+    id="cameraZoomSlider"
+    class="camera-zoom-slider"
+    min="1"
+    max="3"
+    step="0.1"
+    value="1"
+  >
+
+  <span id="cameraZoomMax" class="camera-zoom-max">3.0x</span>
+
+  <button type="button" id="cameraZoomInButton" class="camera-zoom-button">＋</button>
+</div>
+
+<div class="camera-actions">
+
+    
     <canvas id="productCameraCanvas" class="hidden"></canvas>
 
     <div class="camera-actions">
