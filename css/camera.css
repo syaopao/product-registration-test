@@ -1,65 +1,295 @@
 /* カメラ・ライトボックス・確認ダイアログ */
 
-#lightbox{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:200;display:flex;align-items:center;justify-content:center;padding:54px 12px 82px}
-#lightbox.hidden{display:none!important}
-#lightboxImg{max-width:95vw;max-height:calc(100vh - 150px);border-radius:8px;object-fit:contain;transition:transform .12s ease}
-.lightbox-actions{position:fixed;left:12px;right:12px;bottom:max(12px,env(safe-area-inset-bottom));display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
-.lightbox-actions button{min-height:48px;border-radius:8px;background:rgba(255,255,255,.18);color:#fff}
-#lightboxClose{background:rgba(255,255,255,.28)}
-#cameraDialog{position:fixed;inset:0;z-index:210;display:grid;grid-template-rows:1fr auto;place-items:center;background:#05070a;padding:max(10px,env(safe-area-inset-top)) 10px max(10px,env(safe-area-inset-bottom))}
-#cameraDialog.hidden{display:none!important}
-.camera-monitor{position:relative;width:min(100%,calc(100vh - 130px));aspect-ratio:1/1}
-.camera-count{position:absolute;left:10px;top:10px;min-height:28px;padding:5px 10px;border-radius:999px;background:rgba(5,7,10,.72);color:#fff;font-size:13px;font-weight:850}
-.camera-actions{width:100%;max-width:560px;display:grid;grid-template-columns:1fr 2fr 1fr;gap:8px;padding-top:12px;align-items:center}
-#cameraDialog button:focus{outline:none}
-#confirmDialog{position:fixed;inset:0;z-index:220;display:grid;place-items:center;padding:18px;background:rgba(23,33,43,.48)}
-#confirmDialog.hidden{display:none!important}
-.confirm-box{width:100%;max-width:440px;display:grid;gap:16px;padding:18px;border-radius:8px;background:#fff;box-shadow:0 18px 48px rgba(23,33,43,.3)}
-.confirm-title{margin:0;font-size:20px;font-weight:850}
-.confirm-text{margin:0;color:#3a4653;font-size:16px;font-weight:700;white-space:pre-line}
-.confirm-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.confirm-actions button{min-height:50px}
-
-/* ===== カメラズームUI ===== */
-
-.camera-zoom{
-  width:100%;
-  max-width:560px;
-  display:grid;
-  grid-template-columns:auto auto minmax(0,1fr) auto auto;
-  align-items:center;
-  gap:8px;
-  padding:10px 4px 2px;
+#lightbox {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.92);
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 54px 12px 82px;
 }
 
-.camera-zoom-button{
-  width:42px;
-  min-width:42px;
-  min-height:42px;
-  padding:0;
-  border-radius:999px;
-  font-size:24px;
-  line-height:1;
+#lightbox.hidden {
+  display: none !important;
+}
+
+#lightboxImg {
+  max-width: 95vw;
+  max-height: calc(100vh - 150px);
+  border-radius: 8px;
+  object-fit: contain;
+  transition: transform 0.12s ease;
+}
+
+.lightbox-actions {
+  position: fixed;
+  left: 12px;
+  right: 12px;
+  bottom: max(12px, env(safe-area-inset-bottom));
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
+}
+
+.lightbox-actions button {
+  min-height: 48px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.18);
+  color: #fff;
+}
+
+#lightboxClose {
+  background: rgba(255, 255, 255, 0.28);
+}
+
+
+/* ==============================
+   カメラ画面
+   ============================== */
+
+#cameraDialog {
+  position: fixed;
+  inset: 0;
+  z-index: 210;
+  display: grid;
+  grid-template-rows: 1fr auto auto;
+  place-items: center;
+  background: #05070a;
+  padding:
+    max(10px, env(safe-area-inset-top))
+    10px
+    max(10px, env(safe-area-inset-bottom));
+}
+
+#cameraDialog.hidden {
+  display: none !important;
+}
+
+.camera-monitor {
+  position: relative;
+  width: min(100%, calc(100vh - 190px));
+  aspect-ratio: 1 / 1;
+}
+
+.camera-count {
+  position: absolute;
+  left: 10px;
+  top: 10px;
+  min-height: 28px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: rgba(5, 7, 10, 0.72);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 850;
+}
+
+
+/* ==============================
+   カメラズームUI
+   ============================== */
+
+.camera-zoom {
+  width: 100%;
+  max-width: 560px;
+  display: grid;
+  grid-template-columns: 38px auto minmax(0, 1fr) auto 38px;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 8px 4px;
+}
+
+.camera-zoom.hidden {
+  display: none !important;
+}
+
+.camera-zoom-button {
+  width: 38px;
+  height: 38px;
+  min-width: 38px;
+  min-height: 38px;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  font-size: 22px;
+  font-weight: 500;
+  line-height: 1;
+  box-shadow: none;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.camera-zoom-button:active {
+  transform: scale(0.94);
+  background: rgba(255, 255, 255, 0.16);
 }
 
 .camera-zoom-value,
-.camera-zoom-max{
-  color:#fff;
-  font-size:14px;
-  font-weight:800;
-  white-space:nowrap;
+.camera-zoom-max {
+  color: rgba(255, 255, 255, 0.88);
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
 }
 
-.camera-zoom-slider{
-  width:100%;
-  min-height:42px;
-  padding:0;
-  cursor:pointer;
-  accent-color:#ffffff;
+.camera-zoom-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 5px;
+  min-height: 5px;
+  margin: 0;
+  padding: 0;
+  border: none;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.28);
+  box-shadow: none;
+  outline: none;
+  cursor: pointer;
 }
 
-.camera-zoom.hidden{
-  display:none!important;
+.camera-zoom-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border: 3px solid #fff;
+  border-radius: 50%;
+  background: #0f84d8;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+  cursor: pointer;
 }
 
-/* ===== /カメラズームUI ===== */
+.camera-zoom-slider::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border: 3px solid #fff;
+  border-radius: 50%;
+  background: #0f84d8;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+  cursor: pointer;
+}
+
+.camera-zoom-slider::-moz-range-track {
+  height: 5px;
+  border: none;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.28);
+}
+
+
+/* ==============================
+   カメラ操作ボタン
+   ============================== */
+
+.camera-actions {
+  width: 100%;
+  max-width: 560px;
+  display: grid;
+  grid-template-columns: 1fr 2fr 1fr;
+  gap: 12px;
+  align-items: center;
+  padding-top: 14px;
+}
+
+#closeProductCameraButton {
+  min-height: 46px;
+  padding: 0 14px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  box-shadow: none;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+#closeProductCameraButton:active {
+  transform: scale(0.96);
+  background: rgba(255, 255, 255, 0.15);
+}
+
+#captureProductCameraButton {
+  justify-self: center;
+  width: 118px;
+  height: 58px;
+  min-height: 58px;
+  padding: 0;
+  border: 2px solid rgba(255, 255, 255, 0.92);
+  border-radius: 999px;
+  background: rgba(20, 132, 216, 0.92);
+  color: #fff;
+  font-size: 17px;
+  font-weight: 800;
+  box-shadow:
+    0 6px 20px rgba(0, 0, 0, 0.30),
+    inset 0 0 0 2px rgba(255, 255, 255, 0.08);
+}
+
+#captureProductCameraButton:active {
+  transform: scale(0.95);
+}
+
+#cameraDialog button:focus {
+  outline: none;
+}
+
+
+/* ==============================
+   確認ダイアログ
+   ============================== */
+
+#confirmDialog {
+  position: fixed;
+  inset: 0;
+  z-index: 220;
+  display: grid;
+  place-items: center;
+  padding: 18px;
+  background: rgba(23, 33, 43, 0.48);
+}
+
+#confirmDialog.hidden {
+  display: none !important;
+}
+
+.confirm-box {
+  width: 100%;
+  max-width: 440px;
+  display: grid;
+  gap: 16px;
+  padding: 18px;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 18px 48px rgba(23, 33, 43, 0.30);
+}
+
+.confirm-title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 850;
+}
+
+.confirm-text {
+  margin: 0;
+  color: #3a4653;
+  font-size: 16px;
+  font-weight: 700;
+  white-space: pre-line;
+}
+
+.confirm-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.confirm-actions button {
+  min-height: 50px;
+}
