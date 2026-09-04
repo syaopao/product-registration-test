@@ -90,7 +90,7 @@
       barcodeScanner = new Html5Qrcode('barcodeReader', { formatsToSupport: getBarcodeFormats() });
       barcodeScanner.start(
         { facingMode: 'environment' },
-        { fps: 10, qrbox: { width: 280, height: 120 }, aspectRatio: 1.777 },
+        { fps: 10, qrbox: { width: 300, height: 90 }, aspectRatio: 1.777 },
         async decodedText => {
           barcodeNumber.value = decodedText;
           updateBarcodeCharCount();
