@@ -1,4 +1,4 @@
-const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwz2Fi7rCIG8I1ayVh2C0LxxtHVqOARPEWXSUXWccrbhGF6ttWP7gElOl5ofejGZT71/exec';
+const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbyJyXD4Sf9lKc-QMbElqWQGdLnIK903chNYnZNimqBrMoloZKTSBLWFo8mJZRJIzYhA/exec';
 
 // ==============================
 // Google ログイン + 30日ログイン保持
