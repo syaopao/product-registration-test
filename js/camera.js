@@ -89,6 +89,237 @@ function getDroppedFiles(event) {
 // 商品カメラ起動
 // ==========================================
 
+function getSavedCameraMode() {
+  return localStorage.getItem('cameraMode') || 'smartphone-android';
+}
+
+
+// PC内蔵カメラらしい名前を除外するための判定
+function isLikelyBuiltInCameraLabel(label) {
+  const normalized =
+    String(label || '').toLowerCase();
+
+  return (
+    normalized.includes('integrated') ||
+    normalized.includes('built-in') ||
+    normalized.includes('builtin') ||
+    normalized.includes('internal') ||
+    normalized.includes('facetime hd')
+  );
+}
+
+
+// PC入力モードで使うスマホカメラを探す
+async function findPreferredPhoneCameraDevice(
+  cameraMode
+) {
+  if (
+    !navigator.mediaDevices ||
+    !navigator.mediaDevices.enumerateDevices
+  ) {
+    return null;
+  }
+
+  let devices =
+    await navigator.mediaDevices
+      .enumerateDevices();
+
+  let cameras =
+    devices.filter(
+      device =>
+        device.kind === 'videoinput'
+    );
+
+  // カメラ許可前は device.label が空の場合があるため、
+  // 一度だけ仮ストリームを開いてラベル取得を試す
+  if (
+    cameras.length &&
+    cameras.every(
+      device => !device.label
+    )
+  ) {
+    let temporaryStream = null;
+
+    try {
+      temporaryStream =
+        await navigator.mediaDevices
+          .getUserMedia({
+            audio: false,
+            video: true,
+          });
+    } catch (error) {
+      // ラベル取得だけが目的なので、
+      // 失敗しても後続処理へ進む
+    } finally {
+      if (temporaryStream) {
+        temporaryStream
+          .getTracks()
+          .forEach(
+            track => track.stop()
+          );
+      }
+    }
+
+    devices =
+      await navigator.mediaDevices
+        .enumerateDevices();
+
+    cameras =
+      devices.filter(
+        device =>
+          device.kind === 'videoinput'
+      );
+  }
+
+  if (!cameras.length) {
+    return null;
+  }
+
+  const isIPhoneMode =
+    cameraMode === 'pc-iphone';
+
+  const iphoneKeywords = [
+    'iphone',
+    'continuity',
+    'ios',
+  ];
+
+  const androidKeywords = [
+    'android',
+    'droidcam',
+    'pixel',
+    'galaxy',
+    'xperia',
+    'aquos',
+    'phone link',
+    'windows virtual camera',
+  ];
+
+  const keywords =
+    isIPhoneMode
+      ? iphoneKeywords
+      : androidKeywords;
+
+  // まず名前から目的のスマホカメラを探す
+  const keywordMatch =
+    cameras.find(device => {
+      const label =
+        String(
+          device.label || ''
+        ).toLowerCase();
+
+      return keywords.some(
+        keyword =>
+          label.includes(keyword)
+      );
+    });
+
+  if (keywordMatch) {
+    return keywordMatch;
+  }
+
+  // PC内蔵カメラらしいものを除外
+  const externalCandidates =
+    cameras.filter(
+      device =>
+        !isLikelyBuiltInCameraLabel(
+          device.label
+        )
+    );
+
+  // 外部カメラが1台だけならそれを使う
+  if (externalCandidates.length === 1) {
+    return externalCandidates[0];
+  }
+
+  // カメラ自体が1台だけならそれを使う
+  if (cameras.length === 1) {
+    return cameras[0];
+  }
+
+  // 複数あって特定できない場合は
+  // PC内蔵カメラへ勝手に切り替えない
+  return null;
+}
+
+
+// 設定されたモードから
+// getUserMedia用の条件を作る
+async function getProductCameraVideoConstraints() {
+  const cameraMode =
+    getSavedCameraMode();
+
+  const videoConstraints = {
+    width: {
+      ideal: 1920,
+    },
+
+    height: {
+      ideal: 1440,
+    },
+
+    frameRate: {
+      ideal: 15,
+      max: 24,
+    },
+  };
+
+  // ------------------------------------------
+  // スマホ単体モード
+  // ------------------------------------------
+  if (
+    cameraMode ===
+      'smartphone-iphone' ||
+    cameraMode ===
+      'smartphone-android'
+  ) {
+    videoConstraints.facingMode = {
+      ideal: 'environment',
+    };
+
+    return videoConstraints;
+  }
+
+  // ------------------------------------------
+  // PC入力モード
+  // ------------------------------------------
+  if (
+    cameraMode === 'pc-android' ||
+    cameraMode === 'pc-iphone'
+  ) {
+    const cameraDevice =
+      await findPreferredPhoneCameraDevice(
+        cameraMode
+      );
+
+    if (!cameraDevice) {
+      const cameraName =
+        cameraMode === 'pc-iphone'
+          ? 'iPhoneカメラ'
+          : 'Androidカメラ';
+
+      throw new Error(
+        `${cameraName}を特定できませんでした。スマホをPCへ接続して、PC側でWebカメラとして認識されていることを確認してください。`
+      );
+    }
+
+    videoConstraints.deviceId = {
+      exact: cameraDevice.deviceId,
+    };
+
+    return videoConstraints;
+  }
+
+  // 設定値がおかしい場合は
+  // 背面カメラ優先に戻す
+  videoConstraints.facingMode = {
+    ideal: 'environment',
+  };
+
+  return videoConstraints;
+}
+
+
 async function startProductCamera() {
   await unlockShutterSound();
 
@@ -108,29 +339,15 @@ async function startProductCamera() {
   await stopProductCamera(false);
 
   try {
+    const videoConstraints =
+      await getProductCameraVideoConstraints();
+
     productCameraStream =
-      await navigator.mediaDevices.getUserMedia({
-        audio: false,
-
-        video: {
-          facingMode: {
-            ideal: 'environment',
-          },
-
-          width: {
-            ideal: 1920,
-          },
-
-          height: {
-            ideal: 1440,
-          },
-
-          frameRate: {
-            ideal: 15,
-            max: 24,
-          },
-        },
-      });
+      await navigator.mediaDevices
+        .getUserMedia({
+          audio: false,
+          video: videoConstraints,
+        });
 
     setupProductCameraZoom();
 
@@ -152,8 +369,14 @@ async function startProductCamera() {
   } catch (error) {
     await stopProductCamera(false);
 
+    const detail =
+      error &&
+      error.message
+        ? ` ${error.message}`
+        : '';
+
     showMessage(
-      '軽量カメラを起動できませんでした。写真選択を使ってください。',
+      `軽量カメラを起動できませんでした。${detail}`,
       'error'
     );
   }
