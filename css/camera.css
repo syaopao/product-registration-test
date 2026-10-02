@@ -68,11 +68,6 @@
 }
 
 .camera-monitor {
-  position: relative;
-  width: min(100%, calc(100vh - 190px));
-  aspect-ratio: 1 / 1;
-  touch-action: none;
-}
 
 .camera-monitor video {
   width: 100%;
@@ -80,8 +75,12 @@
   display: block;
 
   object-fit: cover;
+}
 
-  border-radius: 8px;
+#cameraDialog.windows-link-mode
+.camera-monitor video {
+  transform: scale(1.43);
+  transform-origin: center center;
 }
 
 
