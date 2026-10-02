@@ -369,11 +369,7 @@ async function startProductCamera() {
 
     updateProductCameraCount();
 
-    cameraDialog.classList.toggle(
-  'windows-link-mode',
-  getSavedCameraMode() ===
-    'pc-windows-link'
-);
+
 
 cameraDialog.classList.remove(
   'hidden'
