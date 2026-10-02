@@ -1,0 +1,87 @@
+/* ヘッダー・設定ドロワー・ログイン */
+
+:root{--header-height:62px;--footer-height:76px}
+body{padding-top:calc(var(--header-height) + env(safe-area-inset-top))}
+main{padding-top:10px;padding-bottom:calc(var(--footer-height) + env(safe-area-inset-bottom) + 20px)}
+.app-header{position:fixed;top:0;left:50%;transform:translateX(-50%);z-index:110;width:100%;max-width:560px;height:calc(var(--header-height) + env(safe-area-inset-top));padding:max(8px,env(safe-area-inset-top)) 8px 8px;display:grid;grid-template-columns:52px minmax(0,1fr) auto;align-items:center;gap:6px;background:#fff;border-bottom:1px solid var(--line);box-shadow:0 2px 10px rgba(23,33,43,.08)}
+.app-header button{min-height:44px;height:44px;padding:7px 9px;font-size:13px;border-radius:8px}
+.header-menu-button{width:48px!important;min-width:48px;font-size:23px!important;padding:0!important}
+.app-header-title{margin:0;font-size:21px;font-weight:850;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.header-actions{display:flex;gap:5px;justify-content:flex-end}
+.header-actions button{width:auto;white-space:nowrap}
+.restore-notice{margin:0 2px 8px;font-size:12px;font-weight:800;color:var(--danger)}
+.drawer-overlay{position:fixed;inset:0;z-index:130;background:rgba(17,24,39,.42)}
+.settings-drawer{position:fixed;left:0;top:0;bottom:0;z-index:140;width:min(72vw,390px);min-width:min(300px,92vw);background:#f7f9fb;box-shadow:10px 0 30px rgba(23,33,43,.25);transform:translateX(-105%);transition:transform .22s ease;display:flex;flex-direction:column;padding-top:env(safe-area-inset-top)}
+.settings-drawer.open{transform:translateX(0)}
+.drawer-header{height:62px;flex:0 0 62px;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 10px;background:#fff;border-bottom:1px solid var(--line);font-size:19px}
+.drawer-close{width:44px!important;min-height:42px!important;font-size:23px!important;padding:0!important}
+.drawer-content{flex:1 1 auto;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:10px 10px calc(96px + env(safe-area-inset-bottom));display:grid;align-content:start;gap:10px;overscroll-behavior:contain;scroll-padding-bottom:120px}
+.drawer-section{background:#fff;border:1px solid var(--line);border-radius:9px;overflow:hidden}
+.drawer-section>summary{cursor:pointer;list-style:none;padding:13px 12px;font-size:16px;font-weight:850}
+.drawer-section>summary::-webkit-details-marker{display:none}
+.drawer-section>summary::after{content:"＋";float:right;color:var(--muted)}
+.drawer-section[open]>summary::after{content:"−"}
+.drawer-keep-options{grid-template-columns:repeat(2,minmax(0,1fr));padding:0 12px 12px;gap:7px}
+.drawer-keep-options .keep-option{font-size:13px;white-space:normal}
+.setting-body{display:grid;gap:9px;padding:0 10px 12px}
+.setting-list{display:grid;gap:6px}
+.setting-row{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:8px;min-height:44px;padding:6px 7px;border:1px solid var(--line);border-radius:8px;background:#fbfcfd;font-weight:750;overflow-wrap:anywhere}
+.setting-row button{width:auto;min-height:36px;padding:7px 9px;font-size:12px}
+.setting-add-row{display:grid;grid-template-columns:minmax(0,1fr) 72px;gap:7px}
+.setting-add-row input{min-height:48px;font-size:16px;padding:9px}
+.setting-add-row button{min-height:48px;font-size:14px;padding:8px}
+.setting-toggle{display:flex;align-items:center;gap:8px;font-size:15px;font-weight:800}
+.setting-toggle input{position:static!important;width:21px!important;height:21px!important;min-height:21px!important}
+body.drawer-open{overflow:hidden}
+@media (max-width:390px){
+.app-header{grid-template-columns:46px minmax(0,1fr) auto}
+.app-header-title{font-size:19px}
+.header-actions{gap:3px}
+.app-header button{padding:6px;font-size:11px}
+.header-menu-button{width:43px!important;min-width:43px}
+.settings-drawer{width:78vw}
+}
+@media (min-width:600px) and (hover:hover){
+main{padding-top:14px;padding-bottom:110px}
+.settings-drawer{width:360px}
+}
+.drawer-section{scroll-margin-top:8px}
+.drawer-section>summary{position:relative;user-select:none;-webkit-user-select:none}
+.drawer-section>summary:active{background:var(--soft)}
+.drawer-section[open]{overflow:visible}
+.drawer-section[open]>.setting-body,.drawer-section[open]>.drawer-keep-options{animation:drawerSectionOpen .14s ease-out}
+@keyframes drawerSectionOpen{from{opacity:.55;transform:translateY(-3px)}to{opacity:1;transform:translateY(0)}}
+.login-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #e5e7eb;
+  padding: 24px;
+}
+.login-card {
+  width: min(100%, 360px);
+  padding: 32px 24px;
+  background: #ffffff;
+  border-radius: 16px;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+}
+.login-card h1 {
+  margin: 0 0 12px;
+  font-size: 22px;
+}
+.login-card p {
+  margin: 0 0 24px;
+  color: #666666;
+  font-size: 14px;
+}
+#googleLoginButton {
+  display: flex;
+  justify-content: center;
+}
+#settingsDrawer details:nth-of-type(7) {
+  display: none;
+}
