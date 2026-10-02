@@ -375,6 +375,28 @@ async function startProductCamera() {
 
     await productCameraVideo.play();
 
+    if (
+      !productCameraVideo.dataset
+        .focusClickReady
+    ) {
+      productCameraVideo.dataset
+        .focusClickReady = '1';
+
+      productCameraVideo.addEventListener(
+        'click',
+        async () => {
+          if (
+            getSavedCameraMode() !==
+            'pc-windows-link'
+          ) {
+            return;
+          }
+
+          await tryProductCameraFocus();
+        }
+      );
+    }
+
     showMessage(
       '軽量カメラを起動しました。',
       ''
@@ -394,7 +416,6 @@ async function startProductCamera() {
     );
   }
 }
-
 
 // ==========================================
 // 商品撮影
@@ -2383,6 +2404,77 @@ async function setupProductCameraZoom() {
     );
   }
 }
+
+
+
+async function tryProductCameraFocus() {
+  if (!productCameraStream) {
+    return;
+  }
+
+  const tracks =
+    productCameraStream.getVideoTracks();
+
+  if (!tracks.length) {
+    return;
+  }
+
+  const track =
+    tracks[0];
+
+  if (
+    !track.getCapabilities ||
+    !track.applyConstraints
+  ) {
+    return;
+  }
+
+  const capabilities =
+    track.getCapabilities();
+
+  try {
+    if (
+      capabilities.focusMode &&
+      capabilities.focusMode.includes(
+        'single-shot'
+      )
+    ) {
+      await track.applyConstraints({
+        advanced: [
+          {
+            focusMode:
+              'single-shot'
+          }
+        ]
+      });
+
+      return;
+    }
+
+    if (
+      capabilities.focusMode &&
+      capabilities.focusMode.includes(
+        'continuous'
+      )
+    ) {
+      await track.applyConstraints({
+        advanced: [
+          {
+            focusMode:
+              'continuous'
+          }
+        ]
+      });
+    }
+  } catch (error) {
+    console.warn(
+      'フォーカス変更に失敗しました:',
+      error
+    );
+  }
+}
+
+
 
 
 // ==========================================
