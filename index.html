@@ -151,10 +151,15 @@
         </section>
         <section id="barcodeUploaderSection" class="hidden">
           <div class="field">バーコード読み取り
+            
             <div class="actions barcode-actions">
+              
+               <label class="file-button secondary">写真から<br>読み取る<input id="barcodeImageInput" type="file" accept="image/*"></label>
+              
               <button type="button" id="startBarcodeScanButton">カメラで<br>読み取る</button>
-              <label class="file-button secondary">写真から<br>読み取る<input id="barcodeImageInput" type="file" accept="image/*"></label>
+                          
             </div>
+            
             <div id="barcodeReader"></div>
             <label><span class="barcode-label-row"><span>バーコード番号</span><span class="barcode-count" id="barcodeCharCount">0 / 13桁</span></span><input name="barcodeNumber" id="barcodeNumber" inputmode="numeric" autocomplete="off" placeholder="読み取れない場合は手入力"></label>
             <button class="secondary" type="button" id="clearBarcodeButton">番号をクリア</button>
