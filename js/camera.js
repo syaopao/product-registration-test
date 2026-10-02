@@ -280,35 +280,48 @@ async function getProductCameraVideoConstraints() {
     return videoConstraints;
   }
 
-  // ------------------------------------------
-  // PC入力モード
-  // ------------------------------------------
-  if (
-    cameraMode === 'pc-android' ||
-    cameraMode === 'pc-iphone'
-  ) {
-    const cameraDevice =
-      await findPreferredPhoneCameraDevice(
-        cameraMode
-      );
+// ------------------------------------------
+// PC入力モード
+// ------------------------------------------
+if (
+  cameraMode === 'pc-windows-link' ||
+  cameraMode === 'pc-android' ||
+  cameraMode === 'pc-iphone'
+) {
+  const cameraDevice =
+    await findPreferredPhoneCameraDevice(
+      cameraMode
+    );
 
-    if (!cameraDevice) {
-      const cameraName =
-        cameraMode === 'pc-iphone'
-          ? 'iPhoneカメラ'
-          : 'Androidカメラ';
+  if (!cameraDevice) {
+    let cameraName =
+      'Androidカメラ';
 
-      throw new Error(
-        `${cameraName}を特定できませんでした。スマホをPCへ接続して、PC側でWebカメラとして認識されていることを確認してください。`
-      );
+    if (
+      cameraMode ===
+      'pc-windows-link'
+    ) {
+      cameraName =
+        'Windows連携カメラ';
+    } else if (
+      cameraMode ===
+      'pc-iphone'
+    ) {
+      cameraName =
+        'iPhoneカメラ';
     }
 
-    videoConstraints.deviceId = {
-      exact: cameraDevice.deviceId,
-    };
-
-    return videoConstraints;
+    throw new Error(
+      `${cameraName}を特定できませんでした。スマホをPCへ接続して、PC側でカメラとして認識されていることを確認してください。`
+    );
   }
+
+  videoConstraints.deviceId = {
+    exact: cameraDevice.deviceId,
+  };
+
+  return videoConstraints;
+}
 
   // 設定値がおかしい場合は
   // 背面カメラ優先に戻す
