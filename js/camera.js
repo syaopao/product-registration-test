@@ -2308,32 +2308,63 @@ if (
 
   productCameraZoomCapabilities =
     capabilities.zoom;
+
+  const settings =
+    productCameraZoomTrack
+      .getSettings
+      ? productCameraZoomTrack
+          .getSettings()
+      : {};
+
+  productCameraZoomValue =
+    Number(
+      settings.zoom
+    ) ||
+    Number(
+      productCameraZoomCapabilities.min
+    ) ||
+    1;
 }
 
+const min =
+  Number(
+    productCameraZoomCapabilities.min
+  ) || 1;
+
+const max =
+  Number(
+    productCameraZoomCapabilities.max
+  ) || min;
+
+const step =
+  Number(
+    productCameraZoomCapabilities.step
+  ) || 0.1;
+
   // スライダー設定
-  slider.min =
-    String(min);
+slider.min =
+  String(min);
 
-  slider.max =
-    String(max);
+slider.max =
+  String(max);
 
-  slider.step =
-    String(step);
+slider.step =
+  String(step);
 
-  slider.value =
-    String(
-      productCameraZoomValue
-    );
-
-  valueLabel.textContent =
-    `${productCameraZoomValue.toFixed(1)}x`;
-
-  maxLabel.textContent =
-    `${max.toFixed(1)}x`;
-
-  controls.classList.remove(
-    'hidden'
+slider.value =
+  String(
+    productCameraZoomValue
   );
+
+valueLabel.textContent =
+  `${productCameraZoomValue.toFixed(1)}x`;
+
+maxLabel.textContent =
+  `${max.toFixed(1)}x`;
+
+controls.classList.remove(
+  'hidden'
+);
 
 
   // ========================================
