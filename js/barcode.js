@@ -78,30 +78,148 @@
       else startBarcodeScan();
     }
 
-    async function startBarcodeScan() {
-      if (!window.Html5Qrcode || !window.Html5QrcodeSupportedFormats) {
-        showBarcodeMessage('この端末では読み取り機能を読み込めませんでした。手入力してください。', 'error');
-        return;
-      }
-      showBarcodeMessage('カメラ起動中...');
-      if (barcodeScanner) await stopBarcodeScan(false);
-      document.getElementById('startBarcodeScanButton').textContent = 'カメラ停止';
-      document.getElementById('startBarcodeScanButton').classList.add('secondary');
-      barcodeScanner = new Html5Qrcode('barcodeReader', { formatsToSupport: getBarcodeFormats() });
-      barcodeScanner.start(
-        { facingMode: 'environment' },
-        { fps: 10, qrbox: { width: 300, height: 90 }, aspectRatio: 1.777 },
-        async decodedText => {
-          barcodeNumber.value = decodedText;
-          updateBarcodeCharCount();
-          showBarcodeMessage(`読み取り成功: ${decodedText}`, 'success');
-          await stopBarcodeScan(false);
-        },
-        () => {}
-      ).catch(error => {
-        showBarcodeMessage(`カメラを起動できませんでした。手入力してください。${error}`, 'error');
-      });
+    async function getBarcodeCameraConfig() {
+  const cameraMode =
+    getSavedCameraMode();
+
+  if (
+    cameraMode === 'smartphone-iphone' ||
+    cameraMode === 'smartphone-android'
+  ) {
+    return {
+      facingMode: 'environment',
+    };
+  }
+
+  if (
+    cameraMode === 'pc-android' ||
+    cameraMode === 'pc-iphone'
+  ) {
+    const cameraDevice =
+      await findPreferredPhoneCameraDevice(
+        cameraMode
+      );
+
+    if (!cameraDevice) {
+      const cameraName =
+        cameraMode === 'pc-iphone'
+          ? 'iPhoneカメラ'
+          : 'Androidカメラ';
+
+      throw new Error(
+        `${cameraName}を特定できませんでした。スマホをPCへ接続して、PC側でWebカメラとして認識されていることを確認してください。`
+      );
     }
+
+    return cameraDevice.deviceId;
+  }
+
+  return {
+    facingMode: 'environment',
+  };
+}
+
+
+async function startBarcodeScan() {
+  if (
+    !window.Html5Qrcode ||
+    !window.Html5QrcodeSupportedFormats
+  ) {
+    showBarcodeMessage(
+      'この端末では読み取り機能を読み込めませんでした。手入力してください。',
+      'error'
+    );
+    return;
+  }
+
+  showBarcodeMessage(
+    'カメラ起動中...'
+  );
+
+  if (barcodeScanner) {
+    await stopBarcodeScan(false);
+  }
+
+  const startButton =
+    document.getElementById(
+      'startBarcodeScanButton'
+    );
+
+  startButton.textContent =
+    'カメラ停止';
+
+  startButton.classList.add(
+    'secondary'
+  );
+
+  try {
+    barcodeScanner =
+      new Html5Qrcode(
+        'barcodeReader',
+        {
+          formatsToSupport:
+            getBarcodeFormats()
+        }
+      );
+
+    const barcodeCameraConfig =
+      await getBarcodeCameraConfig();
+
+    await barcodeScanner.start(
+      barcodeCameraConfig,
+      {
+        fps: 10,
+
+        qrbox: {
+          width: 300,
+          height: 90
+        },
+
+        aspectRatio: 1.777
+      },
+
+      async decodedText => {
+        barcodeNumber.value =
+          decodedText;
+
+        updateBarcodeCharCount();
+
+        showBarcodeMessage(
+          `読み取り成功: ${decodedText}`,
+          'success'
+        );
+
+        await stopBarcodeScan(
+          false
+        );
+      },
+
+      () => {}
+    );
+  } catch (error) {
+    if (barcodeScanner) {
+      await barcodeScanner
+        .clear()
+        .catch(() => {});
+
+      barcodeScanner = null;
+    }
+
+    startButton.innerHTML =
+      'カメラで<br>読み取る';
+
+    startButton.classList.remove(
+      'secondary'
+    );
+
+    showBarcodeMessage(
+      `カメラを起動できませんでした。手入力してください。${error}`,
+      'error'
+    );
+  }
+}
+
+
 
     async function stopBarcodeScan(showStoppedMessage = true) {
       if (!barcodeScanner) {
