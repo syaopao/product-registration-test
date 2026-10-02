@@ -359,7 +359,7 @@ function getProductCameraSquareSourceRect(
       Math.min(
         videoWidth,
         Math.round(
-          videoHeight * 9 / 16
+         videoHeight * 3 / 4
         )
       );
 
