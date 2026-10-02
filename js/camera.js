@@ -333,6 +333,198 @@ if (
 }
 
 
+function stopWindowsLinkLivePreview() {
+  if (windowsLinkPreviewAnimation) {
+    cancelAnimationFrame(
+      windowsLinkPreviewAnimation
+    );
+
+    windowsLinkPreviewAnimation = null;
+  }
+
+  if (windowsLinkPreviewCanvas) {
+    windowsLinkPreviewCanvas.remove();
+    windowsLinkPreviewCanvas = null;
+  }
+
+  productCameraVideo.style.display = '';
+}
+
+
+function startWindowsLinkLivePreview() {
+  stopWindowsLinkLivePreview();
+
+  if (
+    getSavedCameraMode() !==
+    'pc-windows-link'
+  ) {
+    return;
+  }
+
+  const monitor =
+    productCameraVideo.closest(
+      '.camera-monitor'
+    );
+
+  if (!monitor) {
+    return;
+  }
+
+  const canvas =
+    document.createElement(
+      'canvas'
+    );
+
+  canvas.width = 720;
+  canvas.height = 720;
+
+  canvas.style.width = '100%';
+  canvas.style.height = '100%';
+  canvas.style.display = 'block';
+  canvas.style.cursor = 'crosshair';
+
+  monitor.insertBefore(
+    canvas,
+    productCameraVideo.nextSibling
+  );
+
+  windowsLinkPreviewCanvas =
+    canvas;
+
+  productCameraVideo.style.display =
+    'none';
+
+  canvas.addEventListener(
+    'click',
+    async () => {
+      await tryProductCameraFocus();
+    }
+  );
+
+  const ctx =
+    canvas.getContext(
+      '2d',
+      {
+        alpha: false
+      }
+    );
+
+  const drawFrame = () => {
+    if (
+      !windowsLinkPreviewCanvas ||
+      !productCameraVideo.videoWidth ||
+      !productCameraVideo.videoHeight
+    ) {
+      windowsLinkPreviewAnimation =
+        requestAnimationFrame(
+          drawFrame
+        );
+
+      return;
+    }
+
+    const videoWidth =
+      productCameraVideo.videoWidth;
+
+    const videoHeight =
+      productCameraVideo.videoHeight;
+
+    let sourceSize;
+    let sourceX;
+    let sourceY;
+
+    if (
+      videoWidth >
+      videoHeight
+    ) {
+      const linkedPortraitWidth =
+        Math.min(
+          videoWidth,
+          Math.round(
+            videoHeight * 9 / 16
+          )
+        );
+
+      sourceSize =
+        Math.max(
+          1,
+          linkedPortraitWidth
+        );
+
+      sourceX =
+        Math.max(
+          0,
+          Math.round(
+            (
+              videoWidth -
+              sourceSize
+            ) / 2
+          )
+        );
+
+      sourceY =
+        Math.max(
+          0,
+          Math.round(
+            (
+              videoHeight -
+              sourceSize
+            ) / 2
+          )
+        );
+    } else {
+      sourceSize =
+        Math.min(
+          videoWidth,
+          videoHeight
+        );
+
+      sourceX =
+        Math.max(
+          0,
+          Math.round(
+            (
+              videoWidth -
+              sourceSize
+            ) / 2
+          )
+        );
+
+      sourceY =
+        Math.max(
+          0,
+          Math.round(
+            (
+              videoHeight -
+              sourceSize
+            ) / 2
+          )
+        );
+    }
+
+    ctx.drawImage(
+      productCameraVideo,
+
+      sourceX,
+      sourceY,
+      sourceSize,
+      sourceSize,
+
+      0,
+      0,
+      canvas.width,
+      canvas.height
+    );
+
+    windowsLinkPreviewAnimation =
+      requestAnimationFrame(
+        drawFrame
+      );
+  };
+
+  drawFrame();
+}
+
 async function startProductCamera() {
   await unlockShutterSound();
 
@@ -376,6 +568,8 @@ cameraDialog.classList.remove(
 );
 
     await productCameraVideo.play();
+
+    startWindowsLinkLivePreview();
 
     if (
       !productCameraVideo.dataset
@@ -668,6 +862,8 @@ async function stopProductCamera(
 
     productCameraStream = null;
   }
+
+  stopWindowsLinkLivePreview();
 
   productCameraVideo.srcObject = null;
 
@@ -2011,6 +2207,9 @@ async function rotateLightboxImage(
 // ・マウスホイール
 // ・スマホ2本指ピンチ
 // ==========================================
+
+let windowsLinkPreviewCanvas = null;
+let windowsLinkPreviewAnimation = null;
 
 let productCameraZoomTrack =
   null;
