@@ -445,30 +445,97 @@ async function captureProductCameraFrame() {
       expectedCount
     );
 
-    const sourceSize = Math.min(
-      productCameraVideo.videoWidth,
-      productCameraVideo.videoHeight
+    const cameraMode =
+  getSavedCameraMode();
+
+const videoWidth =
+  productCameraVideo.videoWidth;
+
+const videoHeight =
+  productCameraVideo.videoHeight;
+
+let sourceSize;
+let sourceX;
+let sourceY;
+
+if (
+  cameraMode ===
+    'pc-windows-link' &&
+  videoWidth > videoHeight
+) {
+  // Windows連携では、
+  // 横長の仮想カメラ映像の中央に
+  // 縦長スマホ映像が入る場合がある
+
+  const linkedPortraitWidth =
+    Math.min(
+      videoWidth,
+      Math.round(
+        videoHeight * 9 / 16
+      )
     );
 
-    const sourceX = Math.max(
+  sourceSize =
+    Math.max(
+      1,
+      linkedPortraitWidth
+    );
+
+  sourceX =
+    Math.max(
       0,
       Math.round(
         (
-          productCameraVideo.videoWidth -
+          videoWidth -
           sourceSize
         ) / 2
       )
     );
 
-    const sourceY = Math.max(
+  sourceY =
+    Math.max(
       0,
       Math.round(
         (
-          productCameraVideo.videoHeight -
+          videoHeight -
           sourceSize
         ) / 2
       )
     );
+} else {
+  // スマホ単体・USBカメラなどは
+  // 今まで通り中央を正方形で切り抜く
+
+  sourceSize =
+    Math.min(
+      videoWidth,
+      videoHeight
+    );
+
+  sourceX =
+    Math.max(
+      0,
+      Math.round(
+        (
+          videoWidth -
+          sourceSize
+        ) / 2
+      )
+    );
+
+  sourceY =
+    Math.max(
+      0,
+      Math.round(
+        (
+          videoHeight -
+          sourceSize
+        ) / 2
+      )
+    );
+}
+
+    
 
     const outputSize = Math.max(
       1,
