@@ -85,3 +85,32 @@ main{padding-top:14px;padding-bottom:110px}
 #settingsDrawer details:nth-of-type(8) {
   display: none;
 }
+
+
+
+.setting-group{
+  display:grid;
+  gap:10px;
+}
+
+.setting-group label{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-size:15px;
+  font-weight:700;
+}
+
+.setting-group input[type=radio]{
+  position:static!important;
+  width:20px!important;
+  height:20px!important;
+  min-height:20px!important;
+  margin:0;
+  padding:0;
+  border:0;
+  background:transparent;
+  appearance:auto!important;
+  -webkit-appearance:radio!important;
+  flex-shrink:0;
+}
