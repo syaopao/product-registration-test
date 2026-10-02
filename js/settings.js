@@ -1,4 +1,6 @@
 // アプリ内設定・アコーディオン・前回コピー/引継ぎ
+    const CAMERA_MODE_KEY = 'cameraMode';
+
     function initLocalSettings() {
       if (!localStorage.getItem(STAFF_OPTIONS_KEY)) localStorage.setItem(STAFF_OPTIONS_KEY, JSON.stringify(['さち', 'えび', 'ぺぺ']));
       if (!localStorage.getItem(SHEET_OPTIONS_KEY)) localStorage.setItem(SHEET_OPTIONS_KEY, JSON.stringify(['リサーチ一覧', 'テスト']));
