@@ -344,81 +344,54 @@ function getProductCameraSquareSourceRect(
   videoWidth,
   videoHeight
 ) {
-  let sourceSize;
-  let sourceX;
-  let sourceY;
+  let sourceSize =
+    Math.min(
+      videoWidth,
+      videoHeight
+    );
 
   if (
-    cameraMode === 'pc-windows-link' &&
-    videoWidth > videoHeight
+    cameraMode ===
+    'pc-windows-link'
   ) {
-    // Windows連携では、
-    // 横長の仮想カメラ映像の中央に
-    // 縦長スマホ映像が入る場合を想定する。
-    const linkedPortraitWidth =
-      Math.min(
-        videoWidth,
-        Math.round(
-        videoHeight * 4 / 5
-        )
+    const zoom =
+      Math.max(
+        1,
+        Number(
+          windowsLinkSoftwareZoom
+        ) || 1
       );
 
     sourceSize =
       Math.max(
         1,
-        linkedPortraitWidth
-      );
-
-    sourceX =
-      Math.max(
-        0,
         Math.round(
-          (
-            videoWidth -
-            sourceSize
-          ) / 2
-        )
-      );
-
-    sourceY =
-      Math.max(
-        0,
-        Math.round(
-          (
-            videoHeight -
-            sourceSize
-          ) / 2
-        )
-      );
-  } else {
-    sourceSize =
-      Math.min(
-        videoWidth,
-        videoHeight
-      );
-
-    sourceX =
-      Math.max(
-        0,
-        Math.round(
-          (
-            videoWidth -
-            sourceSize
-          ) / 2
-        )
-      );
-
-    sourceY =
-      Math.max(
-        0,
-        Math.round(
-          (
-            videoHeight -
-            sourceSize
-          ) / 2
+          sourceSize / zoom
         )
       );
   }
+
+  const sourceX =
+    Math.max(
+      0,
+      Math.round(
+        (
+          videoWidth -
+          sourceSize
+        ) / 2
+      )
+    );
+
+  const sourceY =
+    Math.max(
+      0,
+      Math.round(
+        (
+          videoHeight -
+          sourceSize
+        ) / 2
+      )
+    );
 
   return {
     sourceSize,
@@ -426,7 +399,6 @@ function getProductCameraSquareSourceRect(
     sourceY,
   };
 }
-
 
 // ==========================================
 // Windows連携ライブプレビュー
@@ -2208,6 +2180,8 @@ let productCameraZoomCapabilities =
 let productCameraZoomValue =
   1;
 
+let windowsLinkSoftwareZoom =
+  1;
 
 // ==========================================
 // ピンチズーム状態
@@ -2302,11 +2276,28 @@ async function setupProductCameraZoom() {
     return;
   }
 
-  const capabilities =
-    productCameraZoomTrack
-      .getCapabilities();
+ const capabilities =
+  productCameraZoomTrack
+    .getCapabilities();
 
-  // カメラ側がズーム非対応
+const cameraMode =
+  getSavedCameraMode();
+
+if (
+  cameraMode ===
+  'pc-windows-link'
+) {
+  productCameraZoomCapabilities = {
+    min: 1,
+    max: 3,
+    step: 0.1,
+  };
+
+  productCameraZoomValue =
+    windowsLinkSoftwareZoom;
+} else {
+  // Android・USB等は
+  // カメラ本体のズーム機能を使用
   if (!capabilities.zoom) {
     controls.classList.add(
       'hidden'
@@ -2317,36 +2308,7 @@ async function setupProductCameraZoom() {
 
   productCameraZoomCapabilities =
     capabilities.zoom;
-
-  const min =
-    Number(
-      productCameraZoomCapabilities
-        .min
-    ) || 1;
-
-  const max =
-    Number(
-      productCameraZoomCapabilities
-        .max
-    ) || min;
-
-  const step =
-    Number(
-      productCameraZoomCapabilities
-        .step
-    ) || 0.1;
-
-  const settings =
-    productCameraZoomTrack
-      .getSettings
-      ? productCameraZoomTrack
-          .getSettings()
-      : {};
-
-  productCameraZoomValue =
-    Number(
-      settings.zoom
-    ) || min;
+}
 
   // スライダー設定
   slider.min =
@@ -2767,6 +2729,42 @@ async function setProductCameraZoom(
       )
     );
 
+if (
+  getSavedCameraMode() ===
+  'pc-windows-link'
+) {
+  windowsLinkSoftwareZoom =
+    zoomValue;
+
+  productCameraZoomValue =
+    zoomValue;
+
+  const slider =
+    document.getElementById(
+      'cameraZoomSlider'
+    );
+
+  const valueLabel =
+    document.getElementById(
+      'cameraZoomValue'
+    );
+
+  if (slider) {
+    slider.value =
+      String(
+        zoomValue
+      );
+  }
+
+  if (valueLabel) {
+    valueLabel.textContent =
+      `${zoomValue.toFixed(1)}x`;
+  }
+
+  return;
+}
+
+  
   try {
     await productCameraZoomTrack
       .applyConstraints({
