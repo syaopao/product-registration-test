@@ -19,6 +19,27 @@ window.addEventListener('load', async () => {
     localStorage.getItem(SESSION_STORAGE_KEY) || '';
 
   if (savedSessionToken) {
+     const loginStatusText =
+      document.getElementById(
+        'loginStatusText'
+      );
+
+    const googleLoginButton =
+      document.getElementById(
+        'googleLoginButton'
+      );
+
+    if (loginStatusText) {
+      loginStatusText.textContent =
+        'ログイン情報を読み込み中です...';
+    }
+
+    if (googleLoginButton) {
+      googleLoginButton.style.display =
+        'none';
+    }
+    
+  
     const lastCheckedAt =
       Number(
         localStorage.getItem(
@@ -105,6 +126,27 @@ async function handleGoogleCredentialResponse(
   googleIdToken =
     response.credential;
 
+    const loginStatusText =
+    document.getElementById(
+      'loginStatusText'
+    );
+
+  const googleLoginButton =
+    document.getElementById(
+      'googleLoginButton'
+    );
+
+  if (loginStatusText) {
+    loginStatusText.textContent =
+      'ログインを確認しています...';
+  }
+
+  if (googleLoginButton) {
+    googleLoginButton.style.display =
+      'none';
+  }
+
+  
   try {
     const gasResponse =
       await fetch(
@@ -173,6 +215,17 @@ async function handleGoogleCredentialResponse(
       SESSION_LAST_CHECK_KEY
     );
 
+
+    if (loginStatusText) {
+      loginStatusText.textContent =
+        'Googleアカウントでログインしてください。';
+    }
+
+    if (googleLoginButton) {
+      googleLoginButton.style.display =
+        '';
+    }
+    
     alert(
       'ログイン失敗: ' +
       error.message
@@ -244,6 +297,27 @@ async function tryRestoreSession(
       SESSION_LAST_CHECK_KEY
     );
 
+
+    const loginStatusText =
+      document.getElementById(
+        'loginStatusText'
+      );
+
+    const googleLoginButton =
+      document.getElementById(
+        'googleLoginButton'
+      );
+
+    if (loginStatusText) {
+      loginStatusText.textContent =
+        'Googleアカウントでログインしてください。';
+    }
+
+    if (googleLoginButton) {
+      googleLoginButton.style.display =
+        '';
+    }
+    
     return false;
   }
 }
