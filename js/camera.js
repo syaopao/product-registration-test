@@ -280,48 +280,48 @@ async function getProductCameraVideoConstraints() {
     return videoConstraints;
   }
 
-// ------------------------------------------
-// PC入力モード
-// ------------------------------------------
-if (
-  cameraMode === 'pc-windows-link' ||
-  cameraMode === 'pc-android' ||
-  cameraMode === 'pc-iphone'
-) {
-  const cameraDevice =
-    await findPreferredPhoneCameraDevice(
-      cameraMode
-    );
+  // ------------------------------------------
+  // PC入力モード
+  // ------------------------------------------
+  if (
+    cameraMode === 'pc-windows-link' ||
+    cameraMode === 'pc-android' ||
+    cameraMode === 'pc-iphone'
+  ) {
+    const cameraDevice =
+      await findPreferredPhoneCameraDevice(
+        cameraMode
+      );
 
-  if (!cameraDevice) {
-    let cameraName =
-      'Androidカメラ';
+    if (!cameraDevice) {
+      let cameraName =
+        'Androidカメラ';
 
-    if (
-      cameraMode ===
-      'pc-windows-link'
-    ) {
-      cameraName =
-        'Windows連携カメラ';
-    } else if (
-      cameraMode ===
-      'pc-iphone'
-    ) {
-      cameraName =
-        'iPhoneカメラ';
+      if (
+        cameraMode ===
+        'pc-windows-link'
+      ) {
+        cameraName =
+          'Windows連携カメラ';
+      } else if (
+        cameraMode ===
+        'pc-iphone'
+      ) {
+        cameraName =
+          'iPhoneカメラ';
+      }
+
+      throw new Error(
+        `${cameraName}を特定できませんでした。スマホをPCへ接続して、PC側でカメラとして認識されていることを確認してください。`
+      );
     }
 
-    throw new Error(
-      `${cameraName}を特定できませんでした。スマホをPCへ接続して、PC側でカメラとして認識されていることを確認してください。`
-    );
+    videoConstraints.deviceId = {
+      exact: cameraDevice.deviceId,
+    };
+
+    return videoConstraints;
   }
-
-  videoConstraints.deviceId = {
-    exact: cameraDevice.deviceId,
-  };
-
-  return videoConstraints;
-}
 
   // 設定値がおかしい場合は
   // 背面カメラ優先に戻す
@@ -333,21 +333,131 @@ if (
 }
 
 
+
+// ==========================================
+// 商品カメラ 1:1切り抜き範囲
+// ライブ表示と保存画像で同じ計算を使う
+// ==========================================
+
+function getProductCameraSquareSourceRect(
+  cameraMode,
+  videoWidth,
+  videoHeight
+) {
+  let sourceSize;
+  let sourceX;
+  let sourceY;
+
+  if (
+    cameraMode === 'pc-windows-link' &&
+    videoWidth > videoHeight
+  ) {
+    // Windows連携では、
+    // 横長の仮想カメラ映像の中央に
+    // 縦長スマホ映像が入る場合を想定する。
+    const linkedPortraitWidth =
+      Math.min(
+        videoWidth,
+        Math.round(
+          videoHeight * 9 / 16
+        )
+      );
+
+    sourceSize =
+      Math.max(
+        1,
+        linkedPortraitWidth
+      );
+
+    sourceX =
+      Math.max(
+        0,
+        Math.round(
+          (
+            videoWidth -
+            sourceSize
+          ) / 2
+        )
+      );
+
+    sourceY =
+      Math.max(
+        0,
+        Math.round(
+          (
+            videoHeight -
+            sourceSize
+          ) / 2
+        )
+      );
+  } else {
+    sourceSize =
+      Math.min(
+        videoWidth,
+        videoHeight
+      );
+
+    sourceX =
+      Math.max(
+        0,
+        Math.round(
+          (
+            videoWidth -
+            sourceSize
+          ) / 2
+        )
+      );
+
+    sourceY =
+      Math.max(
+        0,
+        Math.round(
+          (
+            videoHeight -
+            sourceSize
+          ) / 2
+        )
+      );
+  }
+
+  return {
+    sourceSize,
+    sourceX,
+    sourceY,
+  };
+}
+
+
+// ==========================================
+// Windows連携ライブプレビュー
+// ==========================================
+
+let windowsLinkPreviewCanvas =
+  null;
+
+let windowsLinkPreviewAnimation =
+  null;
+
+
 function stopWindowsLinkLivePreview() {
   if (windowsLinkPreviewAnimation) {
     cancelAnimationFrame(
       windowsLinkPreviewAnimation
     );
 
-    windowsLinkPreviewAnimation = null;
+    windowsLinkPreviewAnimation =
+      null;
   }
 
   if (windowsLinkPreviewCanvas) {
     windowsLinkPreviewCanvas.remove();
-    windowsLinkPreviewCanvas = null;
+
+    windowsLinkPreviewCanvas =
+      null;
   }
 
-  productCameraVideo.style.display = '';
+  productCameraVideo.style.display =
+    '';
 }
 
 
@@ -378,10 +488,20 @@ function startWindowsLinkLivePreview() {
   canvas.width = 720;
   canvas.height = 720;
 
-  canvas.style.width = '100%';
-  canvas.style.height = '100%';
-  canvas.style.display = 'block';
-  canvas.style.cursor = 'crosshair';
+  canvas.style.width =
+    '100%';
+
+  canvas.style.height =
+    '100%';
+
+  canvas.style.display =
+    'block';
+
+  canvas.style.cursor =
+    'crosshair';
+
+  canvas.style.objectFit =
+    'cover';
 
   monitor.insertBefore(
     canvas,
@@ -405,13 +525,16 @@ function startWindowsLinkLivePreview() {
     canvas.getContext(
       '2d',
       {
-        alpha: false
+        alpha: false,
       }
     );
 
   const drawFrame = () => {
+    if (!windowsLinkPreviewCanvas) {
+      return;
+    }
+
     if (
-      !windowsLinkPreviewCanvas ||
       !productCameraVideo.videoWidth ||
       !productCameraVideo.videoHeight
     ) {
@@ -423,84 +546,25 @@ function startWindowsLinkLivePreview() {
       return;
     }
 
+    const cameraMode =
+      getSavedCameraMode();
+
     const videoWidth =
       productCameraVideo.videoWidth;
 
     const videoHeight =
       productCameraVideo.videoHeight;
 
-    let sourceSize;
-    let sourceX;
-    let sourceY;
-
-    if (
-      videoWidth >
-      videoHeight
-    ) {
-      const linkedPortraitWidth =
-        Math.min(
-          videoWidth,
-          Math.round(
-            videoHeight * 9 / 16
-          )
-        );
-
-      sourceSize =
-        Math.max(
-          1,
-          linkedPortraitWidth
-        );
-
-      sourceX =
-        Math.max(
-          0,
-          Math.round(
-            (
-              videoWidth -
-              sourceSize
-            ) / 2
-          )
-        );
-
-      sourceY =
-        Math.max(
-          0,
-          Math.round(
-            (
-              videoHeight -
-              sourceSize
-            ) / 2
-          )
-        );
-    } else {
-      sourceSize =
-        Math.min(
-          videoWidth,
-          videoHeight
-        );
-
-      sourceX =
-        Math.max(
-          0,
-          Math.round(
-            (
-              videoWidth -
-              sourceSize
-            ) / 2
-          )
-        );
-
-      sourceY =
-        Math.max(
-          0,
-          Math.round(
-            (
-              videoHeight -
-              sourceSize
-            ) / 2
-          )
-        );
-    }
+    const {
+      sourceSize,
+      sourceX,
+      sourceY,
+    } =
+      getProductCameraSquareSourceRect(
+        cameraMode,
+        videoWidth,
+        videoHeight
+      );
 
     ctx.drawImage(
       productCameraVideo,
@@ -524,6 +588,7 @@ function startWindowsLinkLivePreview() {
 
   drawFrame();
 }
+
 
 async function startProductCamera() {
   await unlockShutterSound();
@@ -561,11 +626,9 @@ async function startProductCamera() {
 
     updateProductCameraCount();
 
-
-
-cameraDialog.classList.remove(
-  'hidden'
-);
+    cameraDialog.classList.remove(
+      'hidden'
+    );
 
     await productCameraVideo.play();
 
@@ -663,96 +726,24 @@ async function captureProductCameraFrame() {
     );
 
     const cameraMode =
-  getSavedCameraMode();
+      getSavedCameraMode();
 
-const videoWidth =
-  productCameraVideo.videoWidth;
+    const videoWidth =
+      productCameraVideo.videoWidth;
 
-const videoHeight =
-  productCameraVideo.videoHeight;
+    const videoHeight =
+      productCameraVideo.videoHeight;
 
-let sourceSize;
-let sourceX;
-let sourceY;
-
-if (
-  cameraMode ===
-    'pc-windows-link' &&
-  videoWidth > videoHeight
-) {
-  // Windows連携では、
-  // 横長の仮想カメラ映像の中央に
-  // 縦長スマホ映像が入る場合がある
-
-  const linkedPortraitWidth =
-    Math.min(
-      videoWidth,
-      Math.round(
-        videoHeight * 9 / 16
-      )
-    );
-
-  sourceSize =
-    Math.max(
-      1,
-      linkedPortraitWidth
-    );
-
-  sourceX =
-    Math.max(
-      0,
-      Math.round(
-        (
-          videoWidth -
-          sourceSize
-        ) / 2
-      )
-    );
-
-  sourceY =
-    Math.max(
-      0,
-      Math.round(
-        (
-          videoHeight -
-          sourceSize
-        ) / 2
-      )
-    );
-} else {
-  // スマホ単体・USBカメラなどは
-  // 今まで通り中央を正方形で切り抜く
-
-  sourceSize =
-    Math.min(
-      videoWidth,
-      videoHeight
-    );
-
-  sourceX =
-    Math.max(
-      0,
-      Math.round(
-        (
-          videoWidth -
-          sourceSize
-        ) / 2
-      )
-    );
-
-  sourceY =
-    Math.max(
-      0,
-      Math.round(
-        (
-          videoHeight -
-          sourceSize
-        ) / 2
-      )
-    );
-}
-
-    
+    const {
+      sourceSize,
+      sourceX,
+      sourceY,
+    } =
+      getProductCameraSquareSourceRect(
+        cameraMode,
+        videoWidth,
+        videoHeight
+      );
 
     const outputSize = Math.max(
       1,
@@ -985,7 +976,7 @@ async function getShutterAudioContext() {
 
   if (
     shutterAudioContext.state ===
-    'suspended'
+      'suspended'
   ) {
     await shutterAudioContext
       .resume()
@@ -1360,7 +1351,6 @@ async function createThumbnailFromImageBlob(
     }
   }
 }
-
 
 // ==========================================
 // 画像追加
@@ -2205,11 +2195,9 @@ async function rotateLightboxImage(
 // ・スライダー
 // ・－ / ＋ ボタン
 // ・マウスホイール
+
 // ・スマホ2本指ピンチ
 // ==========================================
-
-let windowsLinkPreviewCanvas = null;
-let windowsLinkPreviewAnimation = null;
 
 let productCameraZoomTrack =
   null;
@@ -2674,7 +2662,6 @@ async function tryProductCameraFocus() {
     );
   }
 }
-
 
 
 
