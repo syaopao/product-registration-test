@@ -68,6 +68,16 @@
 }
 
 .camera-monitor {
+  position: relative;
+  width: min(100%, calc(100vh - 190px));
+  aspect-ratio: 1 / 1;
+  touch-action: none;
+
+  overflow: hidden;
+  border-radius: 8px;
+}
+
+
 
 .camera-monitor video {
   width: 100%;
@@ -77,11 +87,7 @@
   object-fit: cover;
 }
 
-#cameraDialog.windows-link-mode
-.camera-monitor video {
-  transform: scale(1.43);
-  transform-origin: center center;
-}
+
 
 
 .camera-count {
