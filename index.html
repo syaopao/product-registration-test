@@ -103,23 +103,14 @@
         </div>
       </details>
 
-      <details class="drawer-section">
+       <details class="drawer-section">
         <summary>端末・カメラ設定</summary>
         <div class="setting-body">
           <div class="setting-group">
-            <label><input type="radio" name="deviceMode" value="smartphone" checked> スマホ単体モード</label>
-            <div id="smartphoneModeOptions">
-              <label><input type="radio" name="smartphoneType" value="iphone"> iPhone</label>
-              <label><input type="radio" name="smartphoneType" value="android" checked> Android</label>
-            </div>
-          </div>
-
-          <div class="setting-group">
-            <label><input type="radio" name="deviceMode" value="pc"> PC入力モード</label>
-            <div id="pcModeOptions">
-              <label><input type="radio" name="pcCameraType" value="android" checked> Androidカメラ</label>
-              <label><input type="radio" name="pcCameraType" value="iphone"> iPhoneカメラ</label>
-            </div>
+            <label><input type="radio" name="cameraMode" value="smartphone-iphone"> スマホ単体モード（iPhone）</label>
+            <label><input type="radio" name="cameraMode" value="smartphone-android" checked> スマホ単体モード（Android）</label>
+            <label><input type="radio" name="cameraMode" value="pc-android"> PC入力モード（Androidカメラ）</label>
+            <label><input type="radio" name="cameraMode" value="pc-iphone"> PC入力モード（iPhoneカメラ）</label>
           </div>
         </div>
       </details>
