@@ -17,6 +17,12 @@
       renderCategorySettings();
       renderAccessorySettings();
       renderLotSettings();
+      loadCameraMode();
+
+        document.querySelectorAll('input[name="cameraMode"]').forEach((radio) => {
+  radio.addEventListener('change', saveCameraMode);
+});
+        
       loadGoogleConnectionSettings();
       setAppHeader('商品登録', true);
     }
@@ -38,6 +44,35 @@
     function getAccessoryOptions() { return readStringList(ACCESSORY_OPTIONS_KEY); }
     function getLotOptions() { return readStringList(LOT_OPTIONS_KEY); }
     function getLotFixed() { return localStorage.getItem(LOT_FIXED_KEY) === '1'; }
+
+    function getCameraMode() {
+      return localStorage.getItem(CAMERA_MODE_KEY) || 'smartphone-android';
+    }
+    
+    function loadCameraMode() {
+      const savedMode = getCameraMode();
+    
+      const radio = document.querySelector(
+        `input[name="cameraMode"][value="${savedMode}"]`
+      );
+    
+      if (radio) {
+        radio.checked = true;
+      }
+    }
+    
+    function saveCameraMode() {
+      const selected = document.querySelector(
+        'input[name="cameraMode"]:checked'
+      );
+    
+      if (!selected) return;
+    
+      localStorage.setItem(
+        CAMERA_MODE_KEY,
+        selected.value
+      );
+    }
 
     function renderSelectOptions(select, values) {
       const current = select.value;
