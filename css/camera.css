@@ -74,6 +74,17 @@
   touch-action: none;
 }
 
+.camera-monitor video {
+  width: 100%;
+  height: 100%;
+  display: block;
+
+  object-fit: cover;
+
+  border-radius: 8px;
+}
+
+
 .camera-count {
   position: absolute;
   left: 10px;
