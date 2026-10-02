@@ -73,7 +73,6 @@
     selected.value
   );
 
-  showToast('端末・カメラ設定を保存しました。', 'success');
 }
 
     function renderSelectOptions(select, values) {
