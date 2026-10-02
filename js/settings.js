@@ -62,17 +62,19 @@
     }
     
     function saveCameraMode() {
-      const selected = document.querySelector(
-        'input[name="cameraMode"]:checked'
-      );
-    
-      if (!selected) return;
-    
-      localStorage.setItem(
-        CAMERA_MODE_KEY,
-        selected.value
-      );
-    }
+  const selected = document.querySelector(
+    'input[name="cameraMode"]:checked'
+  );
+
+  if (!selected) return;
+
+  localStorage.setItem(
+    CAMERA_MODE_KEY,
+    selected.value
+  );
+
+  showToast('端末・カメラ設定を保存しました。', 'success');
+}
 
     function renderSelectOptions(select, values) {
       const current = select.value;
