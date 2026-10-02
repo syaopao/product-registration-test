@@ -82,6 +82,6 @@ main{padding-top:14px;padding-bottom:110px}
   display: flex;
   justify-content: center;
 }
-#settingsDrawer details:nth-of-type(7) {
+#settingsDrawer details:nth-of-type(8) {
   display: none;
 }
