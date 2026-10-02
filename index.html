@@ -93,6 +93,7 @@
           <div class="hint">追加・削除した名前がカテゴリーのプルダウンに反映されます。</div>
         </div>
       </details>
+      
       <details class="drawer-section">
         <summary>付属品設定</summary>
         <div class="setting-body">
@@ -101,6 +102,28 @@
           <div class="hint">追加・削除した項目が商品登録画面の付属品チェックボックスに反映されます。複数選択の仕様は変わりません。</div>
         </div>
       </details>
+
+      <details class="drawer-section">
+        <summary>端末・カメラ設定</summary>
+        <div class="setting-body">
+          <div class="setting-group">
+            <label><input type="radio" name="deviceMode" value="smartphone" checked> スマホ単体モード</label>
+            <div id="smartphoneModeOptions">
+              <label><input type="radio" name="smartphoneType" value="iphone"> iPhone</label>
+              <label><input type="radio" name="smartphoneType" value="android" checked> Android</label>
+            </div>
+          </div>
+
+          <div class="setting-group">
+            <label><input type="radio" name="deviceMode" value="pc"> PC入力モード</label>
+            <div id="pcModeOptions">
+              <label><input type="radio" name="pcCameraType" value="android" checked> Androidカメラ</label>
+              <label><input type="radio" name="pcCameraType" value="iphone"> iPhoneカメラ</label>
+            </div>
+          </div>
+        </div>
+      </details>
+      
       <details class="drawer-section">
         <summary>Google接続設定</summary>
         <div class="setting-body">
