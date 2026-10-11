@@ -60,7 +60,13 @@
 
 async function callSubmitRegistration(payload) {
   if (!sessionToken) {
-    throw new Error('ログインが必要です。');
+    const error =
+      new Error('ログインが必要です。');
+
+    error.code =
+      'SESSION_EXPIRED';
+
+    throw error;
   }
 
   const response = await fetch(GAS_WEB_APP_URL, {
@@ -82,10 +88,29 @@ async function callSubmitRegistration(payload) {
 
     if (
       message.includes('セッション') ||
-      message.includes('ログインの有効期限')
+      message.includes('ログインの有効期限') ||
+      message.includes('ログイン情報がありません')
     ) {
-      localStorage.removeItem(SESSION_STORAGE_KEY);
+      localStorage.removeItem(
+        SESSION_STORAGE_KEY
+      );
+
+      localStorage.removeItem(
+        SESSION_LAST_CHECK_KEY
+      );
+
       sessionToken = '';
+
+      const error =
+        new Error(
+          result.message ||
+          'ログインの有効期限が切れました。'
+        );
+
+      error.code =
+        'SESSION_EXPIRED';
+
+      throw error;
     }
 
     throw new Error(result.message || 'GAS送信に失敗しました。');
