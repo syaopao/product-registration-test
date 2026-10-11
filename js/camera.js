@@ -4,88 +4,6 @@
 
 
 // ==========================================
-// 画像アップロード
-// ==========================================
-
-function setupUploader(root) {
-  const key = root.dataset.uploader;
-  const dropZone = root.querySelector('.drop-zone');
-
-  root
-    .querySelectorAll(`[data-file-input="${key}"]`)
-    .forEach(input => {
-      input.addEventListener('change', async () => {
-        await addFiles(key, input.files);
-        input.value = '';
-      });
-    });
-
-  ['dragenter', 'dragover'].forEach(eventName => {
-    dropZone.addEventListener(eventName, event => {
-      event.preventDefault();
-      event.stopPropagation();
-
-      if (event.dataTransfer) {
-        event.dataTransfer.dropEffect = 'copy';
-      }
-
-      dropZone.classList.add('dragging');
-    });
-  });
-
-  ['dragleave', 'dragend'].forEach(eventName => {
-    dropZone.addEventListener(eventName, event => {
-      event.preventDefault();
-      event.stopPropagation();
-
-      dropZone.classList.remove('dragging');
-    });
-  });
-
-  dropZone.addEventListener('drop', async event => {
-    event.preventDefault();
-    event.stopPropagation();
-
-    dropZone.classList.remove('dragging');
-
-    await addFiles(
-      key,
-      getDroppedFiles(event)
-    );
-  });
-}
-
-
-function preventWindowDrop(event) {
-  event.preventDefault();
-  event.stopPropagation();
-}
-
-
-function getDroppedFiles(event) {
-  const dataTransfer = event.dataTransfer;
-
-  if (!dataTransfer) {
-    return [];
-  }
-
-  if (
-    dataTransfer.items &&
-    dataTransfer.items.length
-  ) {
-    return Array.from(dataTransfer.items)
-      .filter(item => item.kind === 'file')
-      .map(item => item.getAsFile())
-      .filter(Boolean);
-  }
-
-  return Array.from(
-    dataTransfer.files || []
-  );
-}
-
-
-// ==========================================
 // 商品カメラ起動
 // ==========================================
 
@@ -97,11 +15,10 @@ async function startProductCamera() {
     !navigator.mediaDevices.getUserMedia
   ) {
     showMessage(
-      'この端末では軽量カメラを起動できません。写真選択を使ってください。',
+      'この端末ではカメラを起動できません。',
       'error'
     );
 
-    productCameraInput.click();
     return;
   }
 
@@ -153,7 +70,7 @@ async function startProductCamera() {
     await stopProductCamera(false);
 
     showMessage(
-      '軽量カメラを起動できませんでした。写真選択を使ってください。',
+      'カメラを起動できませんでした。',
       'error'
     );
   }
@@ -1066,7 +983,7 @@ function renderPreview(key) {
             );
           } else {
             showMessage(
-              '写真選択の画像はメモリ節約のためサムネイルを表示しません。',
+              'この画像はプレビューできません。',
               ''
             );
           }
