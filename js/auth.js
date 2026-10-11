@@ -58,6 +58,10 @@ window.addEventListener('load', async () => {
     localStorage.getItem(SESSION_STORAGE_KEY) || '';
 
   if (savedSessionToken) {
+    setLoginLoading(
+      true,
+      '読み込み中…'
+    );
     const lastCheckedAt =
       Number(
         localStorage.getItem(
