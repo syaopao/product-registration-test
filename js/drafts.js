@@ -8,6 +8,35 @@
         scrollToValidationTarget(validationError);
         return false;
       }
+      const currentItemKey =
+        buildItemKey(
+          payload.lotNumber,
+          payload.controlNumber
+        );
+
+      const duplicateDrafts =
+        (await dbApi.getAll())
+          .filter(draft =>
+            draft.draftId !== AUTOSAVE_DRAFT_ID &&
+            draft.draftId !== editingDraftId
+          );
+
+      const duplicate =
+        duplicateDrafts.find(draft =>
+          buildItemKey(
+            draft.lotNumber,
+            draft.controlNumber
+          ) === currentItemKey
+        );
+
+      if (duplicate) {
+        showMessage(
+          `${currentItemKey} は保存一覧にすでにあります。管理番号を確認してください。`,
+          'error'
+        );
+        return false;
+      }
+
       showMessage('保存中...', '');
       saveDraftButton.disabled = true;
       try {
@@ -153,6 +182,30 @@
     async function clearAutosaveDraft() {
       clearTimeout(autosaveTimer);
       await dbApi.remove(AUTOSAVE_DRAFT_ID).catch(() => {});
+    }
+
+    async function recoverStuckSendingDrafts() {
+      const drafts =
+        await dbApi.getAll().catch(() => []);
+
+      const stuckDrafts =
+        drafts.filter(draft =>
+          draft.draftId !== AUTOSAVE_DRAFT_ID &&
+          draft.status === 'sending'
+        );
+
+      for (const draft of stuckDrafts) {
+        await dbApi.updateMeta({
+          ...draft,
+          status: 'failed',
+          errorMessage:
+            '前回の送信が途中で中断されました。再送してください。',
+          updatedAt:
+            new Date().toISOString(),
+        });
+      }
+
+      return stuckDrafts.length;
     }
 
     async function promptRecoverAutosave() {
@@ -557,8 +610,30 @@
           await dbApi.remove(draftId);
           successCount++;
         } catch (error) {
-          failCount++;
           const latest = await dbApi.getMeta(draftId);
+
+          if (
+            error &&
+            error.code === 'SESSION_EXPIRED'
+          ) {
+            if (latest) {
+              await dbApi.updateMeta({
+                ...latest,
+                status: 'saved',
+                errorMessage:
+                  'ログインの有効期限が切れました。再ログイン後に再送してください。',
+                updatedAt:
+                  new Date().toISOString(),
+              });
+            }
+
+            stoppedCount =
+              selectedIds.length - index;
+            break;
+          }
+
+          failCount++;
+
           if (latest) {
             await dbApi.updateMeta({
               ...latest,
@@ -574,6 +649,11 @@
       stopSendingRequested = false;
       syncSendingControls();
       await renderDraftList();
+      if (!sessionToken) {
+        showLoginScreenAfterSessionExpired();
+        return;
+      }
+
       if (stoppedCount) showListOnlyToast(`送信を停止しました。成功${successCount}件、失敗${failCount}件、未送信${stoppedCount}件。未送信分は保存一覧に残っています。`, 'error');
       else if (failCount) showListOnlyToast(`送信完了: 成功${successCount}件、失敗${failCount}件。失敗分は保存一覧に残っています。`, 'error');
       else showListOnlyToast(`送信完了: ${successCount}件登録しました。`, 'success');
