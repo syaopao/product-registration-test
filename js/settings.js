@@ -216,8 +216,16 @@
         .saveConnectionSettings(settings);
     }
     function buildItemKey(lotNumber, controlNumber) {
-      if (!String(lotNumber || '').trim() || !String(controlNumber || '').trim()) return '';
-      return `${sanitizeFileName(lotNumber)}_${sanitizeFileName(controlNumber)}`.replace(/_+/g, '_');
+      const lot = String(lotNumber || '').trim();
+      const control = String(controlNumber || '').trim();
+
+      if (!lot || !control) return '';
+
+      if (lot === '0') {
+        return sanitizeFileName(control);
+      }
+
+      return `${sanitizeFileName(lot)}_${sanitizeFileName(control)}`.replace(/_+/g, '_');
     }
     function setAppHeader(title, showActions) {
       appHeaderTitle.textContent = title;
