@@ -340,3 +340,42 @@ function showAppAfterLogin(
 }
 
 
+
+
+function showLoginScreenAfterSessionExpired() {
+  googleIdToken = '';
+  sessionToken = '';
+
+  localStorage.removeItem(
+    SESSION_STORAGE_KEY
+  );
+
+  localStorage.removeItem(
+    SESSION_LAST_CHECK_KEY
+  );
+
+  const loginScreen =
+    document.getElementById(
+      'loginScreen'
+    );
+
+  const appContent =
+    document.getElementById(
+      'appContent'
+    );
+
+  if (appContent) {
+    appContent.classList.add(
+      'hidden'
+    );
+  }
+
+  if (loginScreen) {
+    loginScreen.classList.remove(
+      'hidden'
+    );
+  }
+
+  setLoginLoading(false);
+  initGoogleLoginButton();
+}
