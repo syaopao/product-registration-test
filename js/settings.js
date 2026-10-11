@@ -221,7 +221,7 @@
 
       if (!lot || !control) return '';
 
-      if (lot === '0') {
+      if (lot === 'なし') {
         return sanitizeFileName(control);
       }
 
