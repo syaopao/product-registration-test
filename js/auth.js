@@ -14,6 +14,45 @@ const SESSION_CHECK_CACHE_MS = 10 * 60 * 1000;
 let googleIdToken = '';
 let sessionToken = '';
 
+function setLoginLoading(
+  isLoading,
+  message = 'ログイン中…'
+) {
+  const loading =
+    document.getElementById(
+      'loginLoading'
+    );
+
+  const loadingText =
+    document.getElementById(
+      'loginLoadingText'
+    );
+
+  const button =
+    document.getElementById(
+      'googleLoginButton'
+    );
+
+  if (loadingText) {
+    loadingText.textContent =
+      message;
+  }
+
+  if (loading) {
+    loading.classList.toggle(
+      'hidden',
+      !isLoading
+    );
+  }
+
+  if (button) {
+    button.classList.toggle(
+      'hidden',
+      isLoading
+    );
+  }
+}
+
 window.addEventListener('load', async () => {
   const savedSessionToken =
     localStorage.getItem(SESSION_STORAGE_KEY) || '';
@@ -105,6 +144,11 @@ async function handleGoogleCredentialResponse(
   googleIdToken =
     response.credential;
 
+  setLoginLoading(
+    true,
+    'ログイン中…'
+  );
+
   try {
     const gasResponse =
       await fetch(
@@ -173,6 +217,8 @@ async function handleGoogleCredentialResponse(
       SESSION_LAST_CHECK_KEY
     );
 
+    setLoginLoading(false);
+
     alert(
       'ログイン失敗: ' +
       error.message
@@ -184,6 +230,11 @@ async function handleGoogleCredentialResponse(
 async function tryRestoreSession(
   savedToken
 ) {
+  setLoginLoading(
+    true,
+    'ログイン状態を確認中…'
+  );
+
   try {
     const response =
       await fetch(
@@ -243,6 +294,8 @@ async function tryRestoreSession(
     localStorage.removeItem(
       SESSION_LAST_CHECK_KEY
     );
+
+    setLoginLoading(false);
 
     return false;
   }
