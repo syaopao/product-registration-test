@@ -231,8 +231,11 @@ let barcodeScanner = null;
       confirmDialog.addEventListener('click', event => {
         if (event.target === confirmDialog) closeConfirmDialog(false);
       });
-      setTimeout(updateDraftCountBadge, 0);
-      setTimeout(promptRecoverAutosave, 0);
+      setTimeout(async () => {
+        await recoverStuckSendingDrafts();
+        await updateDraftCountBadge();
+        await promptRecoverAutosave();
+      }, 0);
     }
 
     function positionAccessoryMenu() {
