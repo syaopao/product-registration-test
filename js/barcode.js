@@ -69,7 +69,7 @@
         barcodeNumber.value = '';
         updateBarcodeCharCount();
         stopBarcodeScan(false);
-        showBarcodeMessage('カメラで読めない場合は写真から読み取り、それでも難しい場合は手入力してください。');
+        showBarcodeMessage('カメラで読めない場合は手入力してください。');
       }
     }
 
@@ -114,31 +114,6 @@
       const btn = document.getElementById('startBarcodeScanButton');
       if (btn) { btn.innerHTML = 'カメラで<br>読み取る'; btn.classList.remove('secondary'); }
       if (showStoppedMessage) showBarcodeMessage('カメラを停止しました。');
-    }
-
-    async function scanBarcodeImageFile(event) {
-      const file = event.target.files && event.target.files[0];
-      event.target.value = '';
-      if (!file) return;
-      if (!window.Html5Qrcode || !window.Html5QrcodeSupportedFormats) {
-        showBarcodeMessage('この端末では写真読み取り機能を読み込めませんでした。手入力してください。', 'error');
-        return;
-      }
-      await stopBarcodeScan(false);
-      showBarcodeMessage('写真から読み取り中...');
-      const imageScanner = new Html5Qrcode('barcodeReader', { formatsToSupport: getBarcodeFormats() });
-      imageScanner.scanFile(file, true)
-        .then(decodedText => {
-          barcodeNumber.value = decodedText;
-          updateBarcodeCharCount();
-          showBarcodeMessage(`写真から読み取り成功: ${decodedText}`, 'success');
-        })
-        .catch(() => {
-          showBarcodeMessage('写真から読み取れませんでした。手入力してください。', 'error');
-        })
-        .finally(async () => {
-          await imageScanner.clear().catch(() => {});
-        });
     }
 
     function getBarcodeFormats() {
