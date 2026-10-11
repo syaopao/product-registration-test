@@ -113,7 +113,6 @@ let barcodeScanner = null;
     const accessoryButton = accessorySelect.querySelector('.multi-button');
     const accessoryMenu = accessorySelect.querySelector('.multi-menu');
     const accessorySummary = document.getElementById('accessorySummary');
-    const productCameraInput = document.getElementById('productCameraInput');
     const cameraDialog = document.getElementById('cameraDialog');
     const productCameraVideo = document.getElementById('productCameraVideo');
     const productCameraCanvas = document.getElementById('productCameraCanvas');
@@ -174,10 +173,7 @@ let barcodeScanner = null;
       updateBarcodeCharCount();
       updateCategorySection();
       lastSavedSnapshot = getCurrentSnapshot();
-      document.addEventListener('dragover', preventWindowDrop);
-      document.addEventListener('drop', preventWindowDrop);
       document.getElementById('startBarcodeScanButton').addEventListener('click', toggleBarcodeScan);
-      document.getElementById('barcodeImageInput').addEventListener('change', scanBarcodeImageFile);
       document.getElementById('clearBarcodeButton').addEventListener('click', () => {
         barcodeNumber.value = '';
         updateBarcodeCharCount();
@@ -206,7 +202,6 @@ let barcodeScanner = null;
           closeClassificationSuggestions();
         }
       });
-      document.querySelectorAll('[data-uploader]').forEach(setupUploader);
       form.addEventListener('submit', event => event.preventDefault());
       saveDraftButton.addEventListener('click', saveCurrentDraft);
       newButton.addEventListener('click', startNewRegistration);
@@ -219,10 +214,6 @@ let barcodeScanner = null;
       document.getElementById('cameraLabel').addEventListener('click', startProductCamera);
       captureProductCameraButton.addEventListener('click', captureProductCameraFrame);
       closeProductCameraButton.addEventListener('click', stopProductCamera);
-      productCameraInput.addEventListener('change', async () => {
-        await addFiles('productImages', productCameraInput.files);
-        productCameraInput.value = '';
-      });
       document.getElementById('lightboxClose').addEventListener('click', closeLightbox);
       lightboxRotateLeft.addEventListener('click', event => {
         event.stopPropagation();
