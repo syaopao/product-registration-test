@@ -157,23 +157,19 @@
           <div class="field">バーコード読み取り
             <div class="actions barcode-actions">
               <button type="button" id="startBarcodeScanButton">カメラで<br>読み取る</button>
-              <label class="file-button secondary">写真から<br>読み取る<input id="barcodeImageInput" type="file" accept="image/*"></label>
             </div>
             <div id="barcodeReader"></div>
             <label><span class="barcode-label-row"><span>バーコード番号</span><span class="barcode-count" id="barcodeCharCount">0 / 13桁</span></span><input name="barcodeNumber" id="barcodeNumber" inputmode="numeric" autocomplete="off" placeholder="読み取れない場合は手入力"></label>
             <button class="secondary" type="button" id="clearBarcodeButton">番号をクリア</button>
-            <div class="hint" id="barcodeMessage">カメラで読めない場合は写真から読み取り、それでも難しい場合は手入力してください。</div>
+            <div class="hint" id="barcodeMessage">カメラで読めない場合は手入力してください。</div>
           </div>
         </section>
         <section>
           <div class="field">商品画像
             <div class="uploader" data-uploader="productImages">
               <div class="drop-zone">
-                <div class="drop-text">画像をドラッグ&amp;ドロップ</div>
                 <div class="actions image-actions">
                   <button type="button" class="file-button" id="cameraLabel">撮影</button>
-                  <input id="productCameraInput" type="file" accept="image/*">
-                  <label class="file-button secondary">写真選択<input type="file" accept="image/*" multiple data-file-input="productImages"></label>
                 </div>
               </div>
               <div class="preview" data-preview="productImages"></div>
