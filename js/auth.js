@@ -379,3 +379,83 @@ function showLoginScreenAfterSessionExpired() {
   setLoginLoading(false);
   initGoogleLoginButton();
 }
+
+async function logoutApp() {
+  const currentToken = sessionToken;
+
+  googleIdToken = '';
+  sessionToken = '';
+
+  localStorage.removeItem(
+    SESSION_STORAGE_KEY
+  );
+
+  localStorage.removeItem(
+    SESSION_LAST_CHECK_KEY
+  );
+
+  try {
+    if (currentToken) {
+      await fetch(
+        GAS_WEB_APP_URL,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type':
+              'text/plain;charset=utf-8'
+          },
+          body:
+            JSON.stringify({
+              action: 'logout',
+              sessionToken:
+                currentToken
+            })
+        }
+      );
+    }
+  } catch (error) {
+    console.warn(
+      'GAS側ログアウト失敗:',
+      error
+    );
+  }
+
+  if (
+    window.google &&
+    google.accounts &&
+    google.accounts.id
+  ) {
+    google.accounts.id.disableAutoSelect();
+  }
+
+  showLoginScreenAfterSessionExpired();
+}
+
+
+window.addEventListener(
+  'DOMContentLoaded',
+  () => {
+    const logoutButton =
+      document.getElementById(
+        'logoutButton'
+      );
+
+    if (logoutButton) {
+      logoutButton.addEventListener(
+        'click',
+        async () => {
+          const ok = window.confirm(
+            'ログアウトしますか？'
+          );
+
+          if (!ok) {
+            return;
+          }
+
+          await logoutApp();
+        }
+      );
+    }
+  }
+);
+
