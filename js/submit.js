@@ -20,6 +20,7 @@
         barcode: draft.barcode,
         barcodeNumber: draft.barcodeNumber,
         productImages,
+        shippingEstimate: draft.shippingEstimate,
         itemCondition: draft.itemCondition,
         operationCheck: draft.operationCheck,
         damageDetails: draft.damageDetails,
