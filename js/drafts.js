@@ -64,6 +64,7 @@
             thumbBlob: image.thumbBlob || null,
             rotation: getImageRotation(image),
           })),
+          shippingEstimate: payload.shippingEstimate,
           itemCondition: payload.itemCondition,
           operationCheck: payload.operationCheck,
           damageDetails: payload.damageDetails,
@@ -111,6 +112,7 @@
         barcode: valueOf(formData, 'barcode'),
         barcodeNumber: valueOf(formData, 'barcodeNumber'),
         productImages: imageState.productImages,
+        shippingEstimate: valueOf(formData, 'shippingEstimate'),
         itemCondition: valueOf(formData, 'itemCondition'),
         operationCheck: valueOf(formData, 'operationCheck'),
         damageDetails: valueOf(formData, 'damageDetails'),
@@ -147,6 +149,7 @@
         barcode: payload.barcode,
         barcodeNumber: payload.barcodeNumber,
         productImages: payload.productImages,
+        shippingEstimate: payload.shippingEstimate,
         itemCondition: payload.itemCondition,
         operationCheck: payload.operationCheck,
         damageDetails: payload.damageDetails,
@@ -170,6 +173,7 @@
         payload.classification,
         payload.productTitle,
         payload.barcodeNumber,
+        payload.shippingEstimate,
         payload.itemCondition,
         payload.operationCheck,
         payload.damageDetails,
@@ -242,6 +246,7 @@
         form.barcode.value = draft.barcode || '無し';
         form.barcodeNumber.value = draft.barcodeNumber || '';
         updateBarcodeCharCount();
+        form.shippingEstimate.value = draft.shippingEstimate || '';
         form.itemCondition.value = draft.itemCondition || '';
         form.operationCheck.value = draft.operationCheck || '';
         form.damageDetails.value = draft.damageDetails || '';
@@ -385,6 +390,7 @@
       form.barcode.value = draft.barcode || '無し';
       form.barcodeNumber.value = draft.barcodeNumber || '';
       updateBarcodeCharCount();
+      form.shippingEstimate.value = draft.shippingEstimate || '';
       form.itemCondition.value = draft.itemCondition || '';
       form.operationCheck.value = draft.operationCheck || '';
       form.damageDetails.value = draft.damageDetails || '';
