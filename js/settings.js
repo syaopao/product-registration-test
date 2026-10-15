@@ -311,7 +311,7 @@
     function getKeptValues() {
       const settings = getKeepSettings();
       const values = {};
-      ['sheetName', 'staffName', 'lotNumber', 'category', 'classification', 'itemCondition', 'operationCheck'].forEach(name => {
+      ['sheetName', 'staffName', 'lotNumber', 'category', 'classification', 'shippingEstimate', 'itemCondition', 'operationCheck'].forEach(name => {
         if (settings[name] && form[name]) values[name] = form[name].value;
       });
       if (getLotFixed() && form.lotNumber) values.lotNumber = form.lotNumber.value;
@@ -339,6 +339,7 @@
         category: payload.category,
         classification: payload.classification,
         barcode: payload.barcode,
+        shippingEstimate: payload.shippingEstimate,
         itemCondition: payload.itemCondition,
         operationCheck: payload.operationCheck,
         accessories: payload.accessories || [],
@@ -378,7 +379,7 @@
     }
 
     function resetCopiedFields() {
-      ['sheetName', 'staffName', 'lotNumber', 'category', 'classification', 'itemCondition', 'operationCheck'].forEach(name => {
+      ['sheetName', 'staffName', 'lotNumber', 'category', 'classification', 'shippingEstimate', 'itemCondition', 'operationCheck'].forEach(name => {
         if (form[name]) form[name].value = '';
       });
       if (form.barcode) form.barcode.value = '無し';
