@@ -165,6 +165,7 @@
       if (!payload.classification) return { message: '分類を入力してください。', field: 'classification' };
       if (payload.barcode === '有り' && !payload.barcodeNumber) return { message: 'バーコード番号を入力してください。', field: 'barcodeNumber' };
       if (payload.productImages.length === 0) return { message: '商品画像を追加してください。', field: 'productImages' };
+      if (!payload.shippingEstimate) return { message: '発送目安を選択してください。', field: 'shippingEstimate' };
       if (!payload.itemCondition) return { message: '商品状態を選択してください。', field: 'itemCondition' };
       if (!payload.operationCheck) return { message: '動作確認を選択してください。', field: 'operationCheck' };
       return null;
