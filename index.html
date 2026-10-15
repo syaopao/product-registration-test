@@ -57,6 +57,7 @@
           <label class="keep-option"><input type="checkbox" id="keepLotNumber" data-keep-field="lotNumber">ロットNo</label>
           <label class="keep-option"><input type="checkbox" id="keepCategory" data-keep-field="category">カテゴリー</label>
           <label class="keep-option"><input type="checkbox" id="keepClassification" data-keep-field="classification">分類</label>
+          <label class="keep-option"><input type="checkbox" id="keepShippingEstimate" data-keep-field="shippingEstimate">発送目安</label>
           <label class="keep-option"><input type="checkbox" id="keepItemCondition" data-keep-field="itemCondition">商品状態</label>
           <label class="keep-option"><input type="checkbox" id="keepOperationCheck" data-keep-field="operationCheck">動作確認</label>
           <label class="keep-option"><input type="checkbox" id="keepAccessories" data-keep-field="accessories">付属品</label>
@@ -178,6 +179,7 @@
           </div>
         </section>
         <section class="grid">
+          <label>発送目安<select name="shippingEstimate" required><option value="">選択してください</option><option value="ネコポス">ネコポス</option><option value="宅急便">宅急便</option></select></label>
           <label>商品状態<select name="itemCondition" required><option value="">選択してください</option><option value="A 新品・未使用">A 新品・未使用</option><option value="B 未使用に近い">B 未使用に近い</option><option value="C 目立った傷や汚れなし">C 目立った傷や汚れなし</option><option value="D やや傷や汚れあり">D やや傷や汚れあり</option><option value="E 傷や汚れあり">E 傷や汚れあり</option><option value="F 全体的に状態が悪い">F 全体的に状態が悪い</option></select></label>
           <label>動作確認<select name="operationCheck" required><option value="">選択してください</option><option value="稼働品">稼働品</option><option value="ジャンク品">ジャンク品</option></select></label>
           <div class="field">付属品
